@@ -1,0 +1,32 @@
+<section class="publicaciones">
+  <header class="cabecera">
+    <div>
+      <h1>Publicaciones</h1>
+      @if (autenticacion.usuario()) {
+        <p class="ayuda">
+          Hola, {{ autenticacion.usuario()?.nombre }}. Esto es lo último del potrero.
+        </p>
+      } @else {
+        <p class="ayuda">Lo último del potrero.</p>
+      }
+    </div>
+  </header>
+
+  <ul class="categorias" aria-label="Categorías">
+    @for (categoria of categorias; track categoria) {
+      <li>{{ categoria }}</li>
+    }
+  </ul>
+
+  <!-- Sprint 2: listado ordenado por fecha o por me gusta, paginado, y cada publicación en su componente. -->
+  <div class="tarjeta vacio">
+    <h2>Todavía no hay publicaciones</h2>
+    <p class="ayuda">
+      Muy pronto vas a poder publicar si buscás club, si necesitás jugadores o si tu club abre una
+      prueba.
+    </p>
+    @if (!autenticacion.usuario()) {
+      <a class="boton" routerLink="/registro">Crear cuenta</a>
+    }
+  </div>
+</section>

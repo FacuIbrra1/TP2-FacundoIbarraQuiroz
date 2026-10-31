@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Usuario } from './entities/usuario.entity.js';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
 
 @Injectable()
 export class UsuariosService {
-  create(createUsuarioDto: CreateUsuarioDto) {
-    return 'This action adds a new usuario';
+  constructor(
+    @InjectModel(Usuario.name) private readonly usuarioModel: Model<Usuario>,
+  ) {}
+
+  // Trae la contraseña: el login la necesita para compararla.
+  async buscarPorEmail(email: string) {
+    return await this.usuarioModel.findOne({ email: email });
   }
 
-  findAll() {
-    return `This action returns all usuarios`;
+  async buscarPorUsername(username: string) {
+    return await this.usuarioModel.findOne({ username: username });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+  // Sin la contraseña: es lo que se le devuelve al front.
+  async buscarPorId(id: Types.ObjectId) {
+    return await this.usuarioModel.findById(id).select('-password');
   }
 
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  async crear(
+    createUsuarioDto: CreateUsuarioDto,
+    passwordEncriptada: string,
+    imagenUrl: string,
+  ) {
+    // Campo por campo: a la base llega solo lo que se elige acá.
+    return await this.usuarioModel.create({
+      nombre: createUsuarioDto.nombre,
+      apellido: createUsuarioDto.apellido,
+      email: createUsuarioDto.email,
+      username: createUsuarioDto.username,
+      password: passwordEncriptada,
+      fechaNacimiento: createUsuarioDto.fechaNacimiento, // Mongoose convierte el texto a Date.
+      descripcion: createUsuarioDto.descripcion,
+      imagenUrl: imagenUrl,
+      tipo: createUsuarioDto.tipo,
+    });
   }
 }

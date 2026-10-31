@@ -1,1 +1,176 @@
-/* You can add global styles to this file, and also import other style files */
+/* Paleta de Potrero Libre (sale del logo; ver SPRINTS.md, "Identidad visual"). */
+:root {
+  --fondo: #061420;
+  --superficie: #0d2131;
+  --superficie-alta: #15304a;
+  --verde: #3dda45;
+  --azul: #05aff9;
+  --texto: #f2f5f8;
+  --texto-suave: #9db2c7;
+  --error: #ff6b6b;
+  --aviso: #ffc940;
+
+  --fuente: 'Barlow', system-ui, sans-serif;
+  --fuente-titulos: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+  --radio: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+a {
+  color: var(--verde);
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---------- Tarjeta: el contenedor de cada pantalla ---------- */
+
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--superficie-alta);
+  border-radius: var(--radio);
+  padding: 24px;
+}
+
+/* ---------- Formularios ---------- */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.campo label,
+.campo .etiqueta {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.campo input,
+.campo textarea {
+  width: 100%;
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--superficie-alta);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font: inherit;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 84px;
+}
+
+.campo input:focus,
+.campo textarea:focus {
+  outline: 2px solid var(--verde);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+/* Fecha: el ícono del calendario en claro, para que se vea sobre el fondo oscuro. */
+.campo input[type='date'] {
+  color-scheme: dark;
+}
+
+.campo .es-invalido {
+  border-color: var(--error);
+}
+
+.ayuda {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Los errores que devuelve el servidor (nunca un alert()). */
+.errores-servidor {
+  border: 1px solid var(--error);
+  background: rgba(255, 107, 107, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.errores-servidor ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* ---------- Botones ---------- */
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  /* Sobre el verde, el texto va en --fondo: el blanco no se lee (1,9:1). */
+  background: var(--verde);
+  color: var(--fondo);
+}
+
+.boton:hover {
+  filter: brightness(1.08);
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.boton-secundario {
+  background: transparent;
+  color: var(--texto);
+  border: 1px solid var(--superficie-alta);
+}
+
+.boton-ancho {
+  width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+}

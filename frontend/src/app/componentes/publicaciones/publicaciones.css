@@ -1,0 +1,40 @@
+.publicaciones {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+.cabecera p {
+  margin: 4px 0 0;
+}
+
+.categorias {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.categorias li {
+  border: 1px solid var(--superficie-alta);
+  color: var(--azul);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.vacio {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.vacio p {
+  max-width: 420px;
+  margin: 10px auto 20px;
+}

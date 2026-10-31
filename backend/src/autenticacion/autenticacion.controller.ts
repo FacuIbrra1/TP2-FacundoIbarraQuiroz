@@ -1,34 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {Body, Controller, HttpCode, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AutenticacionService } from './autenticacion.service.js';
-import { CreateAutenticacionDto } from './dto/create-autenticacion.dto.js';
-import { UpdateAutenticacionDto } from './dto/update-autenticacion.dto.js';
+import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto.js';
+import { LoginDto } from './dto/login.dto.js';
 
-@Controller('autenticacion')
+@Controller('auth')
 export class AutenticacionController {
   constructor(private readonly autenticacionService: AutenticacionService) {}
 
-  @Post()
-  create(@Body() createAutenticacionDto: CreateAutenticacionDto) {
-    return this.autenticacionService.create(createAutenticacionDto);
+  // multipart/form-data: los datos llegan en el body y la foto en el campo "imagen".
+  // limits: hasta 2 MB; si pesa más, responde 413.
+  @Post('registro')
+  @UseInterceptors(FileInterceptor('imagen', { limits: { fileSize: 2 * 1024 * 1024 } }))
+  registro(@Body() createUsuarioDto: CreateUsuarioDto, @UploadedFile() imagen: Express.Multer.File) {
+    return this.autenticacionService.registro(createUsuarioDto, imagen);
   }
 
-  @Get()
-  findAll() {
-    return this.autenticacionService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.autenticacionService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAutenticacionDto: UpdateAutenticacionDto) {
-    return this.autenticacionService.update(+id, updateAutenticacionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.autenticacionService.remove(+id);
+  @Post('login')
+  @HttpCode(200) // Un POST responde 201 por defecto, pero el login no crea nada.
+  login(@Body() loginDto: LoginDto) {
+    return this.autenticacionService.login(loginDto);
   }
 }
