@@ -1,26 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePublicacioneDto } from './dto/create-publicacione.dto.js';
-import { UpdatePublicacioneDto } from './dto/update-publicacione.dto.js';
 
+// Sprint 2: acá va la lógica de las publicaciones.
 @Injectable()
-export class PublicacionesService {
-  create(createPublicacioneDto: CreatePublicacioneDto) {
-    return 'This action adds a new publicacione';
-  }
-
-  findAll() {
-    return `This action returns all publicaciones`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} publicacione`;
-  }
-
-  update(id: number, updatePublicacioneDto: UpdatePublicacioneDto) {
-    return `This action updates a #${id} publicacione`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} publicacione`;
-  }
-}
+export class PublicacionesService {}
