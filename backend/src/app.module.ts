@@ -12,7 +12,9 @@ import { PublicacionesModule } from './publicaciones/publicaciones.module.js';
   imports: [
     // Primero: carga el .env antes de que MongooseModule y JwtModule lean sus variables.
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI!),
+    // lazyConnection: Nest no espera a que Mongo conecte para arrancar; se conecta en segundo plano y las consultas esperan solas. 
+    // Vercel necesita que el back arranque en menos de 1s.
+    MongooseModule.forRoot(process.env.MONGO_URI!, { lazyConnection: true }),
     // global: true (como en el ejemplo de cookies) deja el JwtService disponible en todos los módulos.
     // Va acá y no en AutenticacionModule: ese archivo se carga antes que el .env, y JWT_SECRET llegaría vacío.
     JwtModule.register({global: true, secret: process.env.JWT_SECRET, signOptions: { expiresIn: '15m' }}),
