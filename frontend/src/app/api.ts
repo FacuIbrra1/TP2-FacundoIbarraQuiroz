@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-// Dirección del back. Al hacer el deploy, va la URL del back en Vercel.
-export const API_URL = 'http://localhost:3000';
+// En la compu (ng serve) usa el back local; publicado en Vercel, el back de Vercel.
+export const API_URL =
+  window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://potrero-libre-back.vercel.app';
 
 // Nest responde los errores como { message: '...' }; si falla el ValidationPipe,
 // como { message: ['...', '...'] }. Esto los deja siempre como una lista para mostrarlos.
