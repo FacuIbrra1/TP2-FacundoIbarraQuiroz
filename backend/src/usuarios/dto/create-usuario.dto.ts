@@ -6,22 +6,26 @@ import {IsDateString, IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, Matches, 
 // No tiene `perfil`: si alguien lo manda para registrarse como administrador,
 // forbidNonWhitelisted lo rechaza con un 400.
 // Tampoco tiene `repetirPassword`: esa comparación es del formulario de Angular.
-
 export class CreateUsuarioDto {
   @IsString({ message: 'El nombre tiene que ser un texto' })
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
   nombre: string;
 
+  // Opcional acá: un club no tiene apellido. Que sea obligatorio para jugador y DT lo controla AutenticacionService, porque depende del tipo de cuenta.
+  @IsOptional()
   @IsString({ message: 'El apellido tiene que ser un texto' })
-  @IsNotEmpty({ message: 'El apellido es obligatorio' })
-  apellido: string;
+  apellido?: string;
 
   @IsEmail({}, { message: 'El correo no tiene un formato válido' })
   email: string;
 
   @IsString({ message: 'El nombre de usuario tiene que ser un texto' })
-  @MinLength(3, {message: 'El nombre de usuario debe tener al menos 3 caracteres'})
-  @MaxLength(20, {message: 'El nombre de usuario no puede superar los 20 caracteres'})
+  @MinLength(3, {
+    message: 'El nombre de usuario debe tener al menos 3 caracteres',
+  })
+  @MaxLength(20, {
+    message: 'El nombre de usuario no puede superar los 20 caracteres',
+  })
   username: string;
 
   // (?=.*[A-Z]) -> en algún lugar hay una mayúscula.
@@ -33,10 +37,11 @@ export class CreateUsuarioDto {
   })
   password: string;
 
+  // Para un club, es la fecha de creación.
   // strict: además del formato AAAA-MM-DD, controla que la fecha exista (rechaza 2001-02-30).
   @IsDateString(
     { strict: true },
-    { message: 'La fecha de nacimiento no es válida' },
+    { message: 'La fecha de nacimiento o de creación no es válida' },
   )
   fechaNacimiento: string;
 

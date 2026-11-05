@@ -12,6 +12,11 @@ import { Autenticacion } from '../../servicios/autenticacion';
 export class MiPerfil {
   protected readonly autenticacion = inject(Autenticacion);
 
+  // Un club muestra la fecha de creación (se guarda en fechaNacimiento).
+  protected esClub(): boolean {
+    return this.autenticacion.usuario()?.tipo === 'club';
+  }
+
   protected nombreDelTipo(tipo: string | undefined): string {
     if (tipo === 'dt') {
       return 'Director técnico';

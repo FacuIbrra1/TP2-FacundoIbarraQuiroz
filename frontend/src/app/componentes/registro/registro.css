@@ -17,6 +17,11 @@ h1 {
   gap: 0 16px;
 }
 
+/* Ocupa las dos columnas (el nombre de la institución, que va sin apellido al lado). */
+.campo-ancho {
+  grid-column: 1 / -1;
+}
+
 /* Tipo de cuenta: tres tarjetas elegibles. */
 .tipos {
   border: none;

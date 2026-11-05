@@ -31,9 +31,10 @@
         }
       </fieldset>
 
-      <div class="grilla">
-        <div class="campo">
-          <label for="nombre">Nombre</label>
+    <div class="grilla">
+      <!-- Para un club, un solo campo a lo ancho: el nombre de la institución. -->
+        <div class="campo" [class.campo-ancho]="esClub()">
+          <label for="nombre">{{ esClub() ? 'Nombre de la institución' : 'Nombre' }}</label>
           <input
             id="nombre"
             type="text"
@@ -42,23 +43,25 @@
             [class.es-invalido]="esCampoInvalido('nombre')"
           />
           @if (esCampoInvalido('nombre')) {
-            <p class="error">El nombre es obligatorio.</p>
+          <p class="error"> {{esClub() ? 'El nombre de la institución es obligatorio.' : 'El nombre es obligatorio.'}} </p>
           }
         </div>
 
-        <div class="campo">
-          <label for="apellido">Apellido</label>
-          <input
-            id="apellido"
-            type="text"
-            formControlName="apellido"
-            autocomplete="family-name"
-            [class.es-invalido]="esCampoInvalido('apellido')"
-          />
-          @if (esCampoInvalido('apellido')) {
-            <p class="error">El apellido es obligatorio.</p>
-          }
-        </div>
+        @if (!esClub()) {
+          <div class="campo">
+            <label for="apellido">Apellido</label>
+            <input
+              id="apellido"
+              type="text"
+              formControlName="apellido"
+              autocomplete="family-name"
+              [class.es-invalido]="apellidoInvalido()"
+            />
+            @if (apellidoInvalido()) {
+              <p class="error">El apellido es obligatorio.</p>
+            }
+          </div>
+        }
 
         <div class="campo">
           <label for="email">Correo</label>
@@ -147,7 +150,7 @@
         </div>
 
         <div class="campo">
-          <label for="fechaNacimiento">Fecha de nacimiento</label>
+          <label for="fechaNacimiento"> {{ esClub() ? 'Fecha de creación' : 'Fecha de nacimiento' }} </label>
           <input
             id="fechaNacimiento"
             type="date"
@@ -156,7 +159,7 @@
             [class.es-invalido]="esCampoInvalido('fechaNacimiento')"
           />
           @if (esCampoInvalido('fechaNacimiento')) {
-            <p class="error">La fecha de nacimiento es obligatoria.</p>
+            <p class="error"> {{esClub() ? 'La fecha de creación es obligatoria.' : 'La fecha de nacimiento es obligatoria.'}}</p>
           }
         </div>
 
@@ -183,7 +186,7 @@
           id="descripcion"
           formControlName="descripcion"
           rows="3"
-          placeholder="Ej.: Delantero, 25 años, juego los fines de semana en zona sur."
+          [placeholder]= "esClub() ? 'Ej.: Club de barrio de Lanús, jugamos en la liga de zona sur.' : 'Ej.: Delantero, 25 años, juego los fines de semana en zona sur.'"
           [class.es-invalido]="esCampoInvalido('descripcion')"
         ></textarea>
         <p class="ayuda contador">{{ form.get('descripcion')?.value?.length ?? 0 }}/200</p>

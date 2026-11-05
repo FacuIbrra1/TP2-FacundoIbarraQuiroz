@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { passwordsIguales, validarPassword } from '../../validadores/password';
 import { mensajesDeError } from '../../api';
+import { apellidoSegunTipo } from '../../validadores/registro';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink],
@@ -20,13 +21,13 @@ export class Registro {
   protected readonly tipos = [
     { valor: 'jugador', titulo: 'Jugador', detalle: 'Busco club o equipo para jugar' },
     { valor: 'dt', titulo: 'Director técnico', detalle: 'Armo y dirijo equipos' },
-    { valor: 'club', titulo: 'Club', detalle: 'La cuenta la maneja su delegado' },
+    { valor: 'club', titulo: 'Club', detalle: 'El perfil de la institución' },
   ];
 
   protected form: FormGroup = this.fb.group(
     {
       nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
+      apellido: [''],
       email: ['', [Validators.required, Validators.email]],
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       password: ['', [Validators.required, Validators.minLength(8), validarPassword]],
@@ -36,7 +37,7 @@ export class Registro {
       tipo: ['', Validators.required],
     },
     // Validación cruzada: compara password con repetirPassword.
-    { validators: passwordsIguales },
+    { validators: [passwordsIguales, apellidoSegunTipo] },
   );
 
   // El campo file no se maneja con formControlName: la imagen se guarda aparte.
@@ -49,6 +50,17 @@ export class Registro {
   protected esCampoInvalido(nombreCampo: string): boolean {
     const campo = this.form.get(nombreCampo);
     return !!(campo && campo.invalid && (campo.dirty || campo.touched));
+  }
+
+  // Un club es una institución: en lugar de nombre y apellido lleva el nombre de la institución, y en lugar de la fecha de nacimiento, la de creación.
+  protected esClub(): boolean {
+    return this.form.get('tipo')?.value === 'club';
+  }
+
+  protected apellidoInvalido(): boolean {
+    const campo = this.form.get('apellido');
+    const tocado = !!(campo && (campo.dirty || campo.touched));
+    return tocado && this.form.hasError('apellidoObligatorio');
   }
 
   protected repetirPasswordInvalido(): boolean {
@@ -94,7 +106,9 @@ export class Registro {
     const valores = this.form.value;
     const datos = new FormData();
     datos.append('nombre', valores.nombre.trim());
-    datos.append('apellido', valores.apellido.trim());
+    if (!this.esClub()) {
+      datos.append('apellido', valores.apellido.trim()); // Un club no tiene apellido.
+    }
     datos.append('email', valores.email.trim());
     datos.append('username', valores.username.trim());
     datos.append('password', valores.password);

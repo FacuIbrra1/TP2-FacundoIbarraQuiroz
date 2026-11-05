@@ -5,10 +5,13 @@ export type UsuarioDocument = HydratedDocument<Usuario>;
 
 @Schema()
 export class Usuario {
+  // Para un club, es el nombre de la institución.
   @Prop({ required: true, trim: true })
   nombre: string;
 
-  @Prop({ required: true, trim: true })
+  // No es obligatorio: un club no tiene apellido (queda vacío).
+  // Para jugador y DT lo exige el registro (AutenticacionService).
+  @Prop({ default: '', trim: true })
   apellido: string;
 
   // unique: crea un índice en Mongo, no permite dos usuarios con el mismo correo.
@@ -22,6 +25,7 @@ export class Usuario {
   @Prop({ required: true })
   password: string;
 
+  // Para un club, es la fecha de creación de la institución.
   @Prop({ required: true })
   fechaNacimiento: Date;
 
