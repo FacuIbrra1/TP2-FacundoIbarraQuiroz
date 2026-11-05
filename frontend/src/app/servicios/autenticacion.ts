@@ -8,8 +8,6 @@ import { RespuestaAutenticacion, Usuario } from '../models/usuario';
 export class Autenticacion {
   private readonly httpClient = inject(HttpClient);
 
-  // La sesión vive en memoria: al recargar la página se pierde.
-  // En el Sprint 3 se guarda en el navegador y se valida el token al iniciar.
   readonly usuario = signal<Usuario | null>(null);
   readonly token = signal<string | null>(null);
 
