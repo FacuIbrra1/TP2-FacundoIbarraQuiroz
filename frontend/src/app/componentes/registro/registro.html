@@ -76,7 +76,7 @@
             @if (form.get('email')?.hasError('required')) {
               <p class="error">El correo es obligatorio.</p>
             }
-            @if (form.get('email')?.hasError('email')) {
+            @if (form.get('email')?.hasError('email') || form.get('email')?.hasError('dominioIncompleto')) {
               <p class="error">El correo no tiene un formato válido.</p>
             }
           }

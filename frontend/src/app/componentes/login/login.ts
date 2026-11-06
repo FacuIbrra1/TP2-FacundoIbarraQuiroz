@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { validarPassword } from '../../validadores/password';
 import { mensajesDeError } from '../../api';
+import { validarDominioEmail } from '../../validadores/email';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink],
@@ -18,7 +19,7 @@ export class Login {
 
   // El login es por correo. La contraseña tiene las mismas reglas que en el registro.
   protected form: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [Validators.required, Validators.email, validarDominioEmail]],
     password: ['', [Validators.required, Validators.minLength(8), validarPassword]],
   });
 

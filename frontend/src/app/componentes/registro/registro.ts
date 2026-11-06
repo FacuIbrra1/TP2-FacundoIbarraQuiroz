@@ -5,6 +5,7 @@ import { Autenticacion } from '../../servicios/autenticacion';
 import { passwordsIguales, validarPassword } from '../../validadores/password';
 import { mensajesDeError } from '../../api';
 import { apellidoSegunTipo } from '../../validadores/registro';
+import { validarDominioEmail } from '../../validadores/email';
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink],
@@ -28,7 +29,7 @@ export class Registro {
     {
       nombre: ['', Validators.required],
       apellido: [''],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email, validarDominioEmail]],
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       password: ['', [Validators.required, Validators.minLength(8), validarPassword]],
       repetirPassword: ['', Validators.required],
