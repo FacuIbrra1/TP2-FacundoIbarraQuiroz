@@ -1,0 +1,42 @@
+/* Oscurece toda la pantalla y centra el modal encima. */
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(6, 20, 32, 0.8);
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+}
+
+h2 {
+  font-size: 1.6rem;
+}
+
+.mensaje {
+  color: var(--texto-suave);
+  margin: 10px 0 16px;
+}
+
+.error {
+  margin-bottom: 16px;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Rojo con el texto oscuro, igual que el verde: el blanco no se lee bien. */
+.boton-peligro {
+  background: var(--error);
+  color: var(--fondo);
+}

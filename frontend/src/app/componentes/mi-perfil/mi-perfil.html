@@ -30,15 +30,44 @@
             <!-- 'UTC': la fecha se guarda a las 00:00 UTC; sin esto, en Argentina se vería el día anterior. -->
             <dd>{{ autenticacion.usuario()?.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
           </div>
+          <div>
+            <dt>Perfil</dt>
+            <dd>{{ autenticacion.usuario()?.perfil === 'administrador' ? 'Administrador' : 'Usuario' }}</dd>
+          </div>
         </dl>
       </div>
     </div>
 
-    <!-- Sprint 2: mis últimas 3 publicaciones con sus comentarios. -->
-    <div class="tarjeta proximamente">
-      <h3>Mis publicaciones</h3>
-      <p class="ayuda">Acá vas a ver tus últimas 3 publicaciones y sus comentarios.</p>
-    </div>
+    <section class="mis-publicaciones">
+      <h2 class="subtitulo">Mis últimas publicaciones</h2>
+
+      @if (cargando()) {
+        <p class="ayuda estado">Cargando tus publicaciones…</p>
+      } @else if (erroresServidor().length > 0) {
+        <div class="errores-servidor" role="alert">
+          <ul>
+            @for (mensaje of erroresServidor(); track mensaje) {
+              <li>{{ mensaje }}</li>
+            }
+          </ul>
+        </div>
+      } @else if (publicaciones().length === 0) {
+        <div class="tarjeta sin-publicaciones">
+          <p class="ayuda">Todavía no publicaste nada.</p>
+          <a class="boton" routerLink="/publicaciones">Ir a publicaciones</a>
+        </div>
+      } @else {
+        <div class="lista">
+          @for (publicacion of publicaciones(); track publicacion._id) {
+            <app-tarjeta-publicacion
+              [publicacion]="publicacion"
+              [acciones]="false"
+              [mostrarComentarios]="true"
+            />
+          }
+        </div>
+      }
+    </section>
   } @else {
     <div class="tarjeta sin-sesion">
       <h2>Ingresá para ver tu perfil</h2>

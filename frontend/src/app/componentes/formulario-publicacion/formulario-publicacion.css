@@ -1,0 +1,66 @@
+.formulario {
+  margin: 20px 0;
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+}
+
+/* Categoría e imagen, una al lado de la otra (en el celular, una debajo de la otra). */
+.fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+
+.fila .campo {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.campo select {
+  width: 100%;
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--superficie-alta);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font: inherit;
+  color-scheme: dark; /* La lista de opciones también en oscuro (como el campo de fecha del registro). */
+}
+
+.campo select:focus {
+  outline: 2px solid var(--verde);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+/* El campo file con el botón en los colores de la app (igual que en el registro). */
+input[type='file'] {
+  padding: 8px;
+  cursor: pointer;
+}
+
+input[type='file']::file-selector-button {
+  background: var(--superficie-alta);
+  color: var(--texto);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-right: 10px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.contador {
+  text-align: right;
+  margin: 0;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}

@@ -1,0 +1,95 @@
+<div class="tarjeta formulario">
+  <h2>Nueva publicación</h2>
+
+  @if (erroresServidor().length > 0) {
+    <div class="errores-servidor" role="alert">
+      <ul>
+        @for (mensaje of erroresServidor(); track $index) {
+          <li>{{ mensaje }}</li>
+        }
+      </ul>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="publicar()" novalidate>
+    <div class="campo">
+      <label for="titulo">Título</label>
+      <input
+        id="titulo"
+        type="text"
+        formControlName="titulo"
+        placeholder="Ej.: Busco arquero para el sábado"
+        [class.es-invalido]="esCampoInvalido('titulo')"
+      />
+      @if (esCampoInvalido('titulo')) {
+        @if (form.get('titulo')?.hasError('required') || form.get('titulo')?.hasError('soloEspacios')) {
+          <p class="error">El título es obligatorio.</p>
+        }
+        @if (form.get('titulo')?.hasError('maxlength')) {
+          <p class="error">El título no puede superar los 100 caracteres.</p>
+        }
+      }
+    </div>
+
+    <div class="campo">
+      <label for="mensaje">Mensaje</label>
+      <textarea
+        id="mensaje"
+        formControlName="mensaje"
+        rows="4"
+        placeholder="Contá qué buscás: puesto, día, horario, zona…"
+        [class.es-invalido]="esCampoInvalido('mensaje')"
+      ></textarea>
+      <p class="ayuda contador">{{ form.get('mensaje')?.value?.length ?? 0 }}/1000</p>
+      @if (esCampoInvalido('mensaje')) {
+        @if (form.get('mensaje')?.hasError('required') || form.get('mensaje')?.hasError('soloEspacios')) {
+          <p class="error">El mensaje es obligatorio.</p>
+        }
+        @if (form.get('mensaje')?.hasError('maxlength')) {
+          <p class="error">El mensaje no puede superar los 1000 caracteres.</p>
+        }
+      }
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" formControlName="categoria">
+          @for (opcion of categorias; track opcion.valor) {
+            <option [value]="opcion.valor">{{ opcion.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="imagen-publicacion">Imagen <span class="ayuda">(opcional)</span></label>
+        <input
+          id="imagen-publicacion"
+          type="file"
+          accept="image/*"
+          (change)="alElegirImagen($event)"
+          [class.es-invalido]="errorImagen()"
+        />
+        @if (errorImagen()) {
+          <p class="error">{{ errorImagen() }}</p>
+        } @else {
+          <p class="ayuda">JPG, PNG o WEBP, hasta 2 MB.</p>
+        }
+      </div>
+    </div>
+
+    <div class="botones">
+      <button
+        class="boton boton-secundario"
+        type="button"
+        [disabled]="enviando()"
+        (click)="cancelar.emit()"
+      >
+        Cancelar
+      </button>
+      <button class="boton" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Publicando…' : 'Publicar' }}
+      </button>
+    </div>
+  </form>
+</div>

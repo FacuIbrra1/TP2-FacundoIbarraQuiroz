@@ -1,0 +1,52 @@
+.comentarios {
+  border-top: 1px solid var(--superficie-alta);
+  padding-top: 12px;
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+h3 .ayuda {
+  font-family: var(--fuente);
+  font-weight: 400;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comentario {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.foto {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  align-items: baseline;
+}
+
+.mensaje {
+  white-space: pre-line;
+}

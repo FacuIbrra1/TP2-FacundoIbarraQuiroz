@@ -1,0 +1,36 @@
+<section class="comentarios" aria-label="Comentarios">
+  <h3>
+    Comentarios
+    @if (!cargando() && !error()) {
+      <span class="ayuda">({{ comentarios().length }})</span>
+    }
+  </h3>
+
+  @if (cargando()) {
+    <p class="ayuda">Cargando comentarios…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (comentarios().length === 0) {
+    <p class="ayuda">Todavía no hay comentarios.</p>
+  } @else {
+    <ul>
+      @for (comentario of comentarios(); track comentario._id) {
+        <li class="comentario">
+          <img class="foto" [src]="comentario.autor.imagenUrl" alt="" width="32" height="32" />
+          <div>
+            <p class="encabezado">
+              <strong>{{ comentario.autor.nombre }} {{ comentario.autor.apellido }}</strong>
+              <span class="ayuda">
+                &#64;{{ comentario.autor.username }} · {{ comentario.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                @if (comentario.modificado) {
+                  · (editado)
+                }
+              </span>
+            </p>
+            <p class="mensaje">{{ comentario.mensaje }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

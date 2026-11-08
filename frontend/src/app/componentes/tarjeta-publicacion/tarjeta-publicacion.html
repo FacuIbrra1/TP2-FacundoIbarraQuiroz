@@ -1,0 +1,39 @@
+<article class="tarjeta publicacion">
+  <header class="encabezado">
+    <img class="foto" [src]="publicacion().autor.imagenUrl" alt="" width="44" height="44" />
+    <div>
+      <p class="autor">{{ publicacion().autor.nombre }} {{ publicacion().autor.apellido }}</p>
+      <p class="ayuda detalle">
+        &#64;{{ publicacion().autor.username }} · {{ nombreDelTipo(publicacion().autor.tipo) }} ·
+        {{ publicacion().fecha | date: 'dd/MM/yyyy HH:mm' }}
+      </p>
+    </div>
+    <span class="categoria">{{ nombreDeCategoria(publicacion().categoria) }}</span>
+  </header>
+
+  <h2>{{ publicacion().titulo }}</h2>
+  <p class="mensaje">{{ publicacion().mensaje }}</p>
+
+  @if (publicacion().imagenUrl) {
+    <img class="imagen" [src]="publicacion().imagenUrl" alt="Imagen de la publicación" />
+  }
+
+  <footer class="acciones">
+    @if (acciones()) {
+      <button type="button" class="me-gusta" [class.activo]="meGusta()" (click)="alTocarMeGusta()">
+        <span aria-hidden="true">{{ meGusta() ? '♥' : '♡' }}</span>
+        {{ publicacion().cantidadLikes }} Me gusta
+      </button>
+
+      @if (puedeBorrar()) {
+        <button type="button" class="borrar" (click)="borrar.emit()">Borrar</button>
+      }
+    } @else {
+      <span class="total-me-gusta">♥ {{ publicacion().cantidadLikes }} Me gusta</span>
+    }
+  </footer>
+
+  @if (mostrarComentarios()) {
+    <app-lista-comentarios [publicacionId]="publicacion()._id" />
+  }
+</article>

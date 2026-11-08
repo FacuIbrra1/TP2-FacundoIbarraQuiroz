@@ -1,0 +1,99 @@
+.publicacion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.foto {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--superficie-alta);
+  flex-shrink: 0;
+}
+
+.autor {
+  margin: 0;
+  font-weight: 600;
+}
+
+.detalle {
+  margin: 0;
+}
+
+.categoria {
+  margin-left: auto;
+  align-self: flex-start;
+  border: 1px solid var(--superficie-alta);
+  color: var(--azul);
+  border-radius: 999px;
+  padding: 2px 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+.mensaje {
+  margin: 0;
+  white-space: pre-line; /* Respeta los saltos de línea del mensaje. */
+}
+
+.imagen {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--superficie-alta);
+  padding-top: 12px;
+}
+
+.acciones button {
+  background: transparent;
+  border: 1px solid var(--superficie-alta);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.me-gusta.activo {
+  color: var(--verde);
+  border-color: var(--verde);
+}
+
+.borrar {
+  margin-left: auto;
+}
+
+.borrar:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.me-gusta:hover {
+  color: var(--verde);
+}
+
+.total-me-gusta {
+  color: var(--texto-suave);
+  font-weight: 600;
+}

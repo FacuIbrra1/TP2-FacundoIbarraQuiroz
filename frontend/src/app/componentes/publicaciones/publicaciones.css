@@ -7,26 +7,86 @@ h1 {
   font-size: 2.2rem;
 }
 
+.cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
 .cabecera p {
   margin: 4px 0 0;
 }
 
-.categorias {
-  list-style: none;
+/* ---------- Orden y categorías ---------- */
+
+.controles {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 0;
+  flex-direction: column;
+  gap: 10px;
   margin: 20px 0;
 }
 
-.categorias li {
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.opciones button {
+  background: transparent;
   border: 1px solid var(--superficie-alta);
-  color: var(--azul);
+  color: var(--texto-suave);
   border-radius: 999px;
-  padding: 4px 14px;
+  padding: 6px 14px;
+  font: inherit;
   font-weight: 600;
   font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.opciones button:hover {
+  color: var(--texto);
+}
+
+/* La opción elegida: en verde, con el texto oscuro (el blanco sobre verde no se lee). */
+.opciones button.activo {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: var(--fondo);
+}
+
+/* Las categorías van en azul, el color de las etiquetas. */
+.categorias button {
+  color: var(--azul);
+}
+
+.categorias button.activo {
+  background: var(--azul);
+  border-color: var(--azul);
+}
+
+/* El aviso de que la publicación se creó (nunca un alert()). */
+.aviso-ok {
+  border: 1px solid var(--verde);
+  background: rgba(61, 218, 69, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+}
+
+/* ---------- Listado ---------- */
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.estado {
+  text-align: center;
+  padding: 32px 0;
 }
 
 .vacio {
@@ -37,4 +97,19 @@ h1 {
 .vacio p {
   max-width: 420px;
   margin: 10px auto 20px;
+}
+
+/* ---------- Paginado ---------- */
+
+.paginado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.paginado .boton:disabled {
+  cursor: default;
+  opacity: 0.4;
 }

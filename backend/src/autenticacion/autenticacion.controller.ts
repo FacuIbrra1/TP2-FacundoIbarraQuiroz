@@ -1,9 +1,10 @@
-import {Body, Controller, HttpCode, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AutenticacionService } from './autenticacion.service.js';
 import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import { AuthGuard } from '../guards/auth/auth.guard.js';
 
 @Controller('auth')
 export class AutenticacionController {
@@ -13,8 +14,16 @@ export class AutenticacionController {
   // memoryStorage (como en el ejemplo de clase): la imagen queda en memoria para Cloudinary.
   // limits: hasta 2 MB; si pesa más, responde 413.
   @Post('registro')
-  @UseInterceptors(FileInterceptor('imagen', {storage: memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 }}))
-  registro(@Body() createUsuarioDto: CreateUsuarioDto, @UploadedFile() imagen: Express.Multer.File) {
+  @UseInterceptors(
+    FileInterceptor('imagen', {
+      storage: memoryStorage(),
+      limits: { fileSize: 2 * 1024 * 1024 },
+    }),
+  )
+  registro(
+    @Body() createUsuarioDto: CreateUsuarioDto,
+    @UploadedFile() imagen: Express.Multer.File,
+  ) {
     return this.autenticacionService.registro(createUsuarioDto, imagen);
   }
 
@@ -22,5 +31,14 @@ export class AutenticacionController {
   @HttpCode(200) // Un POST responde 201 por defecto, pero el login no crea nada.
   login(@Body() loginDto: LoginDto) {
     return this.autenticacionService.login(loginDto);
+  }
+
+
+  // Sirve para que Mi Perfil recupere los datos al recargar la pagina.
+  @Get('perfil')
+  @UseGuards(AuthGuard)
+  perfil(@Req() request: any) {
+    // request.user lo cargó el AuthGuard con los datos del token.
+    return this.autenticacionService.perfil(request.user.sub);
   }
 }

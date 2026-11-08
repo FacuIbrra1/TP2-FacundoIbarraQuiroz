@@ -1,0 +1,30 @@
+<div class="fondo">
+  <div class="tarjeta modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal">
+    <h2 id="titulo-modal">{{ titulo() }}</h2>
+    <p class="mensaje">{{ mensaje() }}</p>
+
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+
+    <div class="botones">
+      <button
+        class="boton boton-secundario"
+        type="button"
+        [disabled]="procesando()"
+        (click)="cancelar.emit()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="boton"
+        type="button"
+        [class.boton-peligro]="peligro()"
+        [disabled]="procesando()"
+        (click)="confirmar.emit()"
+      >
+        {{ procesando() ? 'Un momento…' : textoConfirmar() }}
+      </button>
+    </div>
+  </div>
+</div>
