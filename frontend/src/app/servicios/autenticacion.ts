@@ -31,9 +31,10 @@ export class Autenticacion {
     return this.httpClient.post<RespuestaAutenticacion>(`${API_URL}/auth/registro`, datos);
   }
 
-  login(email: string, password: string): Observable<RespuestaAutenticacion> {
+  // usuario: el correo o el nombre de usuario (el back acepta los dos).
+  login(usuario: string, password: string): Observable<RespuestaAutenticacion> {
     return this.httpClient.post<RespuestaAutenticacion>(`${API_URL}/auth/login`, {
-      email: email,
+      usuario: usuario,
       password: password,
     });
   }

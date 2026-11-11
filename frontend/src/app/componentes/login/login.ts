@@ -4,7 +4,11 @@ import { Router, RouterLink } from '@angular/router';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { validarPassword } from '../../validadores/password';
 import { mensajesDeError } from '../../api';
-import { validarDominioEmail } from '../../validadores/email';
+import { validarUsuarioOCorreo } from '../../validadores/email';
+
+// Acceso rápido (corrección del Sprint 2, 10/11): la cuenta de administrador de prueba.
+// Tiene que existir en la base con perfil "administrador".
+const ADMINISTRADOR_DE_PRUEBA = { usuario: 'administrador', password: 'AdminPotrero2026' };
 
 @Component({
   imports: [ReactiveFormsModule, RouterLink],
@@ -17,9 +21,9 @@ export class Login {
   private readonly autenticacion = inject(Autenticacion);
   private readonly router = inject(Router);
 
-  // El login es por correo. La contraseña tiene las mismas reglas que en el registro.
+  // Se ingresa con el correo o con el nombre de usuario. La contraseña tiene las mismas reglas que en el registro.
   protected form: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email, validarDominioEmail]],
+    usuario: ['', [Validators.required, validarUsuarioOCorreo]],
     password: ['', [Validators.required, Validators.minLength(8), validarPassword]],
   });
 
@@ -36,11 +40,20 @@ export class Login {
       this.form.markAllAsTouched(); // Muestra los mensajes de todos los campos.
       return;
     }
+    this.enviar(this.form.value.usuario.trim(), this.form.value.password);
+  }
 
+  // El botón de acceso rápido: ingresa directo con la cuenta de administrador, sin completar el formulario.
+  protected ingresarComoAdministrador() {
+    this.enviar(ADMINISTRADOR_DE_PRUEBA.usuario, ADMINISTRADOR_DE_PRUEBA.password);
+  }
+
+  // Lo que hacen los dos botones: pedir el login, guardar la sesión e ir a publicaciones.
+  private enviar(usuario: string, password: string) {
     this.enviando.set(true);
     this.erroresServidor.set([]);
 
-    this.autenticacion.login(this.form.value.email, this.form.value.password).subscribe({
+    this.autenticacion.login(usuario, password).subscribe({
       next: (respuesta) => {
         this.autenticacion.guardarSesion(respuesta);
         this.router.navigate(['/publicaciones']);

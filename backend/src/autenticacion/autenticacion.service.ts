@@ -75,15 +75,17 @@ export class AutenticacionService {
 
  // ---- LOGIN ----:
   async login(loginDto: LoginDto) {
-    const usuario = await this.usuariosService.buscarPorEmail(loginDto.email);
+    // Se puede ingresar con el correo o con el nombre de usuario (los dos son únicos).
+    // Primero se busca por correo y, si no hay ninguno, por nombre de usuario.
+    let usuario = await this.usuariosService.buscarPorEmail(loginDto.usuario);
+    if (!usuario) {
+      usuario = await this.usuariosService.buscarPorUsername(loginDto.usuario);
+    }
 
     // bcrypt encripta la contraseña recibida y la compara con la guardada.
-    // Mismo mensaje en los dos casos: no se le dice a nadie qué correos existen.
-    if (
-      !usuario ||
-      !(await bcrypt.compare(loginDto.password, usuario.password))
-    ) {
-      throw new UnauthorizedException('Correo o contraseña incorrectos');
+    // Mismo mensaje en los dos casos: no se le dice a nadie qué cuentas existen.
+    if ( !usuario || !(await bcrypt.compare(loginDto.password, usuario.password))) {
+      throw new UnauthorizedException('Usuario o contraseña incorrectos');
     }
 
     return await this.respuestaConToken(usuario);

@@ -43,6 +43,16 @@ h3 {
   margin: 0;
 }
 
+/* Palabras muy largas, sin espacios (por ejemplo "tituloooooo…"): se cortan donde haga falta
+   para que no se salgan de la tarjeta ni de la pantalla (corrección del Sprint 2, 10/11). */
+h1,
+h2,
+h3,
+p,
+dd {
+  overflow-wrap: anywhere;
+}
+
 a {
   color: var(--verde);
 }

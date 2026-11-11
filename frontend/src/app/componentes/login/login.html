@@ -17,19 +17,19 @@
 
     <form [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
       <div class="campo">
-        <label for="email">Correo</label>
+        <label for="usuario">Correo o nombre de usuario</label>
         <input
-          id="email"
-          type="email"
-          formControlName="email"
-          autocomplete="email"
-          [class.es-invalido]="esCampoInvalido('email')"
+          id="usuario"
+          type="text"
+          formControlName="usuario"
+          autocomplete="username"
+          [class.es-invalido]="esCampoInvalido('usuario')"
         />
-        @if (esCampoInvalido('email')) {
-          @if (form.get('email')?.hasError('required')) {
-            <p class="error">El correo es obligatorio.</p>
+        @if (esCampoInvalido('usuario')) {
+          @if (form.get('usuario')?.hasError('required')) {
+            <p class="error">Ingresá tu correo o tu nombre de usuario.</p>
           }
-          @if (form.get('email')?.hasError('email') || form.get('email')?.hasError('dominioIncompleto')) {
+          @if (form.get('usuario')?.hasError('email') || form.get('usuario')?.hasError('dominioIncompleto')) {
             <p class="error">El correo no tiene un formato válido.</p>
           }
         }
@@ -64,6 +64,19 @@
         {{ enviando() ? 'Ingresando…' : 'Ingresar' }}
       </button>
     </form>
+
+    <!-- Acceso rápido (corrección del Sprint 2): entra con la cuenta de administrador de prueba. -->
+    <div class="acceso-rapido">
+      <p class="ayuda">Acceso rápido</p>
+      <button
+        class="boton boton-secundario boton-ancho"
+        type="button"
+        [disabled]="enviando()"
+        (click)="ingresarComoAdministrador()"
+      >
+        Ingresar como administrador
+      </button>
+    </div>
 
     <p class="pie">¿Todavía no tenés cuenta? <a routerLink="/registro">Creá una</a></p>
   </div>
