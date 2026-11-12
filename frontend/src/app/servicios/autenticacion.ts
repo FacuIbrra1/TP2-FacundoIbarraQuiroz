@@ -9,8 +9,8 @@ const CLAVE_SESION = 'sesionPotreroLibre';
 
 // El token vence a los 15 minutos (lo decide el back). A los 10 minutos de obtenerlo,
 // se avisa que quedan 5 y se ofrece extender la sesión.
-// Para la presentación con el token de 30 segundos, cambiar a 20 * 1000 (aviso a los 20 s).
-const AVISO_MS = 10 * 60 * 1000;
+// Para la presentación con el token de 30 segundos, cambio a 20 * 1000 (aviso a los 20s).
+const AVISO_MS = 20 * 1000;
 
 @Service()
 export class Autenticacion {
@@ -103,13 +103,13 @@ export class Autenticacion {
     localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
   }
 
-  // setTimeout (visto en la clase 1) muestra el aviso cuando se cumplen los 10 minutos.
+  // setTimeout muestra el aviso cuando se cumplen los 10 minutos.
   // clearTimeout cancela el anterior: si no, al extender la sesión quedarían dos contadores.
-  // Si ya pasaron los 10 minutos (por ejemplo, al recargar en el minuto 12), "falta" es negativo
-  // y setTimeout lo muestra enseguida.
+  // Si ya pasaron los 10 minutos (por ejemplo, al recargar en el minuto 12), "falta" es negativo y setTimeout lo muestra enseguida.
   private programarAviso() {
     clearTimeout(this.contador);
     this.mostrarAviso.set(false);
+    
     const falta = this.inicio + AVISO_MS - Date.now();
     this.contador = setTimeout(() => this.mostrarAviso.set(true), falta);
   }
