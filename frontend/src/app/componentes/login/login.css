@@ -39,3 +39,11 @@ h1 {
 .acceso-rapido .ayuda {
   margin: 0 0 8px;
 }
+
+.aviso-sesion {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--aviso);
+  border-radius: 8px;
+  color: var(--aviso);
+}

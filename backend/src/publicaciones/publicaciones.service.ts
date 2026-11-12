@@ -160,6 +160,15 @@ export class PublicacionesService {
     return publicacion;
   }
 
+  
+  // ---- BUSCAR POR ID ----
+  // Para la página de una publicación: 404 si no está (el mismo control que borrar y los me gusta)
+  // y, si está, se trae con los datos del autor, igual que en el listado.
+  async buscarPorId(id: Types.ObjectId) {
+    await this.buscarPublicacionActiva(id);
+    return await this.publicacionModel.findById(id).populate('autor', DATOS_AUTOR);
+  }
+
 
   // ---- MIS ME GUSTA ----
   // El front lo usa para saber en qué publicaciones mostrar el me gusta ya dado.

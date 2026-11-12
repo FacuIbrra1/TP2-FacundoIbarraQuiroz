@@ -21,6 +21,11 @@ export class PublicacionesService {
     return this.httpClient.get<Publicacion[]>(url);
   }
 
+  // GET /publicaciones/:id: una publicación con los datos del autor (para su página).
+  buscarPorId(id: string): Observable<Publicacion> {
+    return this.httpClient.get<Publicacion>(`${API_URL}/publicaciones/${id}`);
+  }
+
   // Los ids de las publicaciones a las que el usuario de la sesión les dio me gusta.
   misLikes(): Observable<string[]> {
     return this.httpClient.get<string[]>(`${API_URL}/publicaciones/mis-likes`);

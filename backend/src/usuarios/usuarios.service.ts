@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Usuario } from './entities/usuario.entity.js';
+import { Ingreso } from './entities/ingreso.entity.js';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 
 @Injectable()
 export class UsuariosService {
   constructor(
     @InjectModel(Usuario.name) private readonly usuarioModel: Model<Usuario>,
+    @InjectModel(Ingreso.name) private readonly ingresoModel: Model<Ingreso>,
   ) {}
 
   // Trae la contraseña: el login la necesita para compararla.
@@ -41,5 +43,10 @@ export class UsuariosService {
       imagenUrl: imagenUrl,
       tipo: createUsuarioDto.tipo,
     });
+  }
+
+  // Sprint 3: anota que el usuario entró (la fecha la pone el schema). La usan el login y el registro.
+  async registrarIngreso(usuarioId: Types.ObjectId) {
+    await this.ingresoModel.create({ usuario: usuarioId });
   }
 }

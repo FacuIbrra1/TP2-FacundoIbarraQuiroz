@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpCode, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {Body, Controller, HttpCode, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AutenticacionService } from './autenticacion.service.js';
@@ -33,12 +33,23 @@ export class AutenticacionController {
     return this.autenticacionService.login(loginDto);
   }
 
-
-  // Sirve para que Mi Perfil recupere los datos al recargar la pagina.
-  @Get('perfil')
+  // POST /auth/autorizar → el AuthGuard valida el token (401 si falta, es inválido o venció).
+  // Si es válido, devuelve los datos del usuario. La usa la pantalla de cargando del front.
+  // (Reemplaza a GET /auth/perfil, la ruta de prueba del Sprint 2, que hacía lo mismo).
+  @Post('autorizar')
+  @HttpCode(200) // No crea nada, como el login.
   @UseGuards(AuthGuard)
-  perfil(@Req() request: any) {
+  autorizar(@Req() request: any) {
     // request.user lo cargó el AuthGuard con los datos del token.
-    return this.autenticacionService.perfil(request.user.sub);
+    return this.autenticacionService.autorizar(request.user.sub);
+  }
+
+  // POST /auth/refrescar → con un token válido, devuelve uno nuevo con el mismo contenido y otros 15 minutos.
+  // La usa el modal de "quedan 5 minutos" del front.
+  @Post('refrescar')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  refrescar(@Req() request: any) {
+    return this.autenticacionService.refrescar(request.user);
   }
 }

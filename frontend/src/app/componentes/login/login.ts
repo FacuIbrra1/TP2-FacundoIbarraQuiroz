@@ -18,7 +18,7 @@ const ADMINISTRADOR_DE_PRUEBA = { usuario: 'administrador', password: 'AdminPotr
 })
 export class Login {
   private readonly fb = inject(FormBuilder);
-  private readonly autenticacion = inject(Autenticacion);
+  protected readonly autenticacion = inject(Autenticacion);
   private readonly router = inject(Router);
 
   // Se ingresa con el correo o con el nombre de usuario. La contraseña tiene las mismas reglas que en el registro.

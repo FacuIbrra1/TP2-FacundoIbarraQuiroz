@@ -57,4 +57,11 @@ export class PublicacionesController {
     return this.publicacionesService.misLikes(request.user.sub);
   }
 
+  // GET /publicaciones/:id → una publicación con los datos del autor (para su página).
+  // Va DESPUÉS de mis-likes: Nest prueba las rutas en orden, y ':id' también coincide con "mis-likes".
+  @Get(':id')
+  buscarPorId(@Param('id', ParseObjectIdPipe) id: Types.ObjectId) {
+    return this.publicacionesService.buscarPorId(id);
+  }
+
 }

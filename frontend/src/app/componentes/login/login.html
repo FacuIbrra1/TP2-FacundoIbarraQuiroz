@@ -5,6 +5,11 @@
     <h1>Ingresar</h1>
     <p class="ayuda subtitulo">La red social del fútbol amateur.</p>
 
+    <!-- Sprint 3: llegó acá porque un pedido dio 401 (el token venció). -->
+    @if (autenticacion.sesionVencida()) {
+      <p class="aviso-sesion" role="status">Tu sesión venció. Ingresá de nuevo para seguir.</p>
+    }
+
     @if (erroresServidor().length > 0) {
       <div class="errores-servidor" role="alert">
         <ul>

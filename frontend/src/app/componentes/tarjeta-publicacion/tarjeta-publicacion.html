@@ -1,7 +1,7 @@
-<article class="tarjeta publicacion">
+<article class="tarjeta publicacion" [class.grande]="grande()">
   <header class="encabezado">
     <img class="foto" [src]="publicacion().autor.imagenUrl" alt="" width="44" height="44" />
-    <div>
+    <div class="datos-autor">
       <p class="autor">{{ publicacion().autor.nombre }} {{ publicacion().autor.apellido }}</p>
       <p class="ayuda detalle">
         &#64;{{ publicacion().autor.username }} · {{ nombreDelTipo(publicacion().autor.tipo) }} ·
@@ -11,7 +11,12 @@
     <span class="categoria">{{ nombreDeCategoria(publicacion().categoria) }}</span>
   </header>
 
-  <h2>{{ publicacion().titulo }}</h2>
+  <!-- En el listado y en Mi Perfil, el título lleva a la página de la publicación. -->
+  @if (grande()) {
+    <h1>{{ publicacion().titulo }}</h1>
+  } @else {
+    <h2><a class="titulo" [routerLink]="['/publicacion', publicacion()._id]">{{ publicacion().titulo }}</a></h2>
+  }
   <p class="mensaje">{{ publicacion().mensaje }}</p>
 
   @if (publicacion().imagenUrl) {
@@ -24,16 +29,21 @@
         <span aria-hidden="true">{{ meGusta() ? '♥' : '♡' }}</span>
         {{ publicacion().cantidadLikes }} Me gusta
       </button>
-
-      @if (puedeBorrar()) {
-        <button type="button" class="borrar" (click)="borrar.emit()">Borrar</button>
-      }
     } @else {
       <span class="total-me-gusta">♥ {{ publicacion().cantidadLikes }} Me gusta</span>
+    }
+
+    @if (!grande()) {
+      <a class="ver" [routerLink]="['/publicacion', publicacion()._id]">Ver y comentar</a>
+    }
+
+    @if (acciones() && puedeBorrar()) {
+      <button type="button" class="borrar" (click)="borrar.emit()">Borrar</button>
     }
   </footer>
 
   @if (mostrarComentarios()) {
-    <app-lista-comentarios [publicacionId]="publicacion()._id" />
+    <!-- En la página de la publicación se puede comentar y editar; en Mi Perfil, solo leer. -->
+    <app-lista-comentarios [publicacionId]="publicacion()._id" [interactiva]="grande()" />
   }
 </article>

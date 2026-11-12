@@ -5,11 +5,13 @@
       <span>Potrero <strong>Libre</strong></span>
     </a>
 
-    <!-- Sprint 1: todas las pantallas se pueden visitar, con o sin sesión. -->
-    <nav class="menu" aria-label="Principal">
-      <a routerLink="/publicaciones" routerLinkActive="activo">Publicaciones</a>
-      <a routerLink="/mi-perfil" routerLinkActive="activo">Mi perfil</a>
-    </nav>
+    <!-- Sprint 3: el menú solo aparece con sesión (las pantallas están protegidas con el sesionGuard). -->
+    @if (autenticacion.usuario()) {
+      <nav class="menu" aria-label="Principal">
+        <a routerLink="/publicaciones" routerLinkActive="activo">Publicaciones</a>
+        <a routerLink="/mi-perfil" routerLinkActive="activo">Mi perfil</a>
+      </nav>
+    }
 
     <div class="cuenta">
       @if (autenticacion.usuario()) {
@@ -31,3 +33,17 @@
 <main class="contenido">
   <router-outlet />
 </main>
+
+<!-- A los 10 minutos de iniciar sesión (el token vence a los 15). -->
+@if (autenticacion.mostrarAviso()) {
+  <app-modal-confirmacion
+    titulo="Tu sesión está por vencer"
+    mensaje="Quedan 5 minutos de sesión. ¿Querés extenderla otros 15 minutos?"
+    textoConfirmar="Extender sesión"
+    textoCancelar="Ahora no"
+    [procesando]="extendiendo()"
+    [error]="errorAlExtender()"
+    (confirmar)="extenderSesion()"
+    (cancelar)="cerrarAviso()"
+  />
+}

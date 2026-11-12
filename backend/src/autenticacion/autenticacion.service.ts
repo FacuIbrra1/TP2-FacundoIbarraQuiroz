@@ -102,15 +102,38 @@ export class AutenticacionService {
     };
     const token = await this.jwtService.signAsync(payload);
 
+    // Sprint 3: cada login o registro queda anotado en "ingresos" (para las estadísticas del Sprint 5).
+    await this.usuariosService.registrarIngreso(usuario._id);
+
     const datosUsuario = await this.usuariosService.buscarPorId(usuario._id);
 
     return { token: token, usuario: datosUsuario };
   }
 
   
-  // ---- PERFIL ----:
-  async perfil(id: Types.ObjectId) {
-  return await this.usuariosService.buscarPorId(id);
+  // ---- AUTORIZAR ----
+  // El token ya lo validó el AuthGuard (401 si falta, es inválido o venció).
+  // Se devuelven los datos actuales del usuario, sin la contraseña.
+  async autorizar(id: Types.ObjectId) {
+    const usuario = await this.usuariosService.buscarPorId(id);
+    if (!usuario) {
+      throw new UnauthorizedException('El usuario del token ya no existe');
+    }
+    return usuario;
   }
-  
+
+
+  // ---- REFRESCAR ----
+  // Un token nuevo con el mismo contenido (id, nombre de usuario y perfil) y otros 15 minutos.
+  // No se firma el payload viejo tal cual: trae "iat" y "exp" (cuándo se creó y cuándo vence),
+  // y signAsync no acepta un payload que ya tiene "exp". Por eso se copian solo los tres datos.
+  async refrescar(payload: any) {
+    const nuevoPayload = {
+      sub: payload.sub,
+      username: payload.username,
+      perfil: payload.perfil,
+    };
+    const token = await this.jwtService.signAsync(nuevoPayload);
+    return { token: token };
+  }
 }

@@ -1,10 +1,33 @@
 <section class="comentarios" aria-label="Comentarios">
-  <h3>
-    Comentarios
-    @if (!cargando() && !error()) {
-      <span class="ayuda">({{ comentarios().length }})</span>
-    }
-  </h3>
+  <h3>Comentarios</h3>
+
+  <!-- Comentar (solo en la página de la publicación). -->
+  @if (interactiva()) {
+    <form class="nuevo" [formGroup]="formNuevo" (ngSubmit)="comentar()" novalidate>
+      <label class="oculto" for="nuevo-comentario">Escribí un comentario</label>
+      <textarea
+        id="nuevo-comentario"
+        rows="2"
+        formControlName="mensaje"
+        placeholder="Escribí un comentario…"
+        [class.es-invalido]="esCampoInvalido(formNuevo)"
+      ></textarea>
+      @if (esCampoInvalido(formNuevo)) {
+        @if (formNuevo.get('mensaje')?.hasError('required') || formNuevo.get('mensaje')?.hasError('soloEspacios')) {
+          <p class="error">El comentario no puede estar vacío.</p>
+        }
+        @if (formNuevo.get('mensaje')?.hasError('maxlength')) {
+          <p class="error">El comentario no puede superar los 500 caracteres.</p>
+        }
+      }
+      @if (errorNuevo()) {
+        <p class="error" role="alert">{{ errorNuevo() }}</p>
+      }
+      <button class="boton boton-chico" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Comentando…' : 'Comentar' }}
+      </button>
+    </form>
+  }
 
   @if (cargando()) {
     <p class="ayuda">Cargando comentarios…</p>
@@ -17,7 +40,7 @@
       @for (comentario of comentarios(); track comentario._id) {
         <li class="comentario">
           <img class="foto" [src]="comentario.autor.imagenUrl" alt="" width="32" height="32" />
-          <div>
+          <div class="cuerpo">
             <p class="encabezado">
               <strong>{{ comentario.autor.nombre }} {{ comentario.autor.apellido }}</strong>
               <span class="ayuda">
@@ -27,10 +50,51 @@
                 }
               </span>
             </p>
-            <p class="mensaje">{{ comentario.mensaje }}</p>
+
+            @if (editandoId() === comentario._id) {
+              <form [formGroup]="formEdicion" (ngSubmit)="guardarEdicion(comentario)" novalidate>
+                <label class="oculto" [for]="'editar-' + comentario._id">Editar el comentario</label>
+                <textarea
+                  [id]="'editar-' + comentario._id"
+                  rows="2"
+                  formControlName="mensaje"
+                  [class.es-invalido]="esCampoInvalido(formEdicion)"
+                ></textarea>
+                @if (esCampoInvalido(formEdicion)) {
+                  @if (formEdicion.get('mensaje')?.hasError('required') || formEdicion.get('mensaje')?.hasError('soloEspacios')) {
+                    <p class="error">El comentario no puede estar vacío.</p>
+                  }
+                  @if (formEdicion.get('mensaje')?.hasError('maxlength')) {
+                    <p class="error">El comentario no puede superar los 500 caracteres.</p>
+                  }
+                }
+                @if (errorEdicion()) {
+                  <p class="error" role="alert">{{ errorEdicion() }}</p>
+                }
+                <div class="botones">
+                  <button class="boton boton-secundario boton-chico" type="button" (click)="cancelarEdicion()">
+                    Cancelar
+                  </button>
+                  <button class="boton boton-chico" type="submit" [disabled]="guardando()">
+                    {{ guardando() ? 'Guardando…' : 'Guardar' }}
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <p class="mensaje">{{ comentario.mensaje }}</p>
+              @if (interactiva() && esMio(comentario)) {
+                <button class="editar" type="button" (click)="empezarEdicion(comentario)">Editar</button>
+              }
+            }
           </div>
         </li>
       }
     </ul>
+
+    @if (hayMas()) {
+      <button class="boton boton-secundario boton-chico cargar-mas" type="button" [disabled]="cargandoMas()" (click)="pedirComentarios()">
+        {{ cargandoMas() ? 'Cargando…' : 'Cargar más' }}
+      </button>
+    }
   }
 </section>

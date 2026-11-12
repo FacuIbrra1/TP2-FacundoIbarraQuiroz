@@ -13,6 +13,7 @@ export class ModalConfirmacion {
   titulo = input.required<string>();
   mensaje = input.required<string>();
   textoConfirmar = input('Confirmar');
+  textoCancelar = input('Cancelar');
   peligro = input(false); // true: el botón de confirmar va en rojo (por ejemplo, para borrar).
   procesando = input(false); // true mientras el padre espera la respuesta del back.
   error = input<string | null>(null);

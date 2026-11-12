@@ -1,0 +1,44 @@
+<section class="pagina">
+  <a class="volver" routerLink="/publicaciones">← Volver a publicaciones</a>
+
+  @if (cargando()) {
+    <p class="ayuda estado">Cargando la publicación…</p>
+  } @else if (error()) {
+    <div class="errores-servidor" role="alert">
+      <ul>
+        <li>{{ error() }}</li>
+      </ul>
+    </div>
+  } @else if (publicacion()) {
+    @if (errorAccion()) {
+      <div class="errores-servidor" role="alert">
+        <ul>
+          <li>{{ errorAccion() }}</li>
+        </ul>
+      </div>
+    }
+
+    <app-tarjeta-publicacion
+      [publicacion]="publicacion()!"
+      [meGusta]="meGusta()"
+      [grande]="true"
+      [mostrarComentarios]="true"
+      (darMeGusta)="darMeGusta(publicacion()!)"
+      (quitarMeGusta)="quitarMeGusta(publicacion()!)"
+      (borrar)="pedirBorrar()"
+    />
+
+    @if (pidiendoBorrar()) {
+      <app-modal-confirmacion
+        titulo="¿Borrar esta publicación?"
+        [mensaje]="'«' + publicacion()?.titulo + '» va a dejar de aparecer en el listado.'"
+        textoConfirmar="Sí, borrar"
+        [peligro]="true"
+        [procesando]="borrando()"
+        [error]="errorAlBorrar()"
+        (confirmar)="confirmarBorrar(publicacion()!)"
+        (cancelar)="cancelarBorrar()"
+      />
+    }
+  }
+</section>

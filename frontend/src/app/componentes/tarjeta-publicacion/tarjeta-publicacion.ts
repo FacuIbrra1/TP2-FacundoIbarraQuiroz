@@ -1,5 +1,6 @@
 import { Component, inject, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Publicacion } from '../../models/publicacion';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { ListaComentarios } from '../lista-comentarios/lista-comentarios';
@@ -8,7 +9,7 @@ import { ListaComentarios } from '../lista-comentarios/lista-comentarios';
 // Recibe la publicación con input() y avisa al padre con output(), como el Hijo del ejemplo de clase:
 // la tarjeta no llama al back, de eso se encarga la página que la muestra.
 @Component({
-  imports: [DatePipe, ListaComentarios],
+  imports: [DatePipe, RouterLink, ListaComentarios],
   selector: 'app-tarjeta-publicacion',
   styleUrl: './tarjeta-publicacion.css',
   templateUrl: './tarjeta-publicacion.html',
@@ -19,7 +20,8 @@ export class TarjetaPublicacion {
   publicacion = input.required<Publicacion>();
   meGusta = input(false); // Si el usuario de la sesión ya le dio me gusta.
   acciones = input(true); // false: sin botones, solo la cantidad de me gusta (Mi Perfil).
-  mostrarComentarios = input(false); // true: muestra los comentarios debajo (Mi Perfil).
+  mostrarComentarios = input(false); // true: muestra los comentarios debajo (Mi Perfil y la página de la publicación).
+  grande = input(false); // true: la página de una publicación (más grande, y se puede comentar).
 
   darMeGusta = output<void>();
   quitarMeGusta = output<void>();

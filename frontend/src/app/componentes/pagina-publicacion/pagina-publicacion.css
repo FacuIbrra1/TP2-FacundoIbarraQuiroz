@@ -1,0 +1,21 @@
+.pagina {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--texto-suave);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.volver:hover {
+  color: var(--texto);
+}
+
+.estado {
+  text-align: center;
+  padding: 24px 0;
+}

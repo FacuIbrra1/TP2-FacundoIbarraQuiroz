@@ -1,4 +1,4 @@
-import {IsIn, IsNotEmpty, IsOptional, IsString, MaxLength} from 'class-validator';
+import {IsIn, IsOptional, IsString, Matches, MaxLength} from 'class-validator';
 
 // Los datos de una publicación nueva (POST /publicaciones).
 // Llega como multipart/form-data (por la imagen opcional): todos los campos llegan como texto.
@@ -8,12 +8,13 @@ import {IsIn, IsNotEmpty, IsOptional, IsString, MaxLength} from 'class-validator
 // Tampoco tiene `imagenUrl`: la arma el back al subir la imagen a Cloudinary.
 export class CreatePublicacionDto {
   @IsString({ message: 'El título tiene que ser un texto' })
-  @IsNotEmpty({ message: 'El título es obligatorio' })
+  // \S = algo que no sea un espacio: rechaza "" y "   " (con solo espacios, el schema la dejaba vacía y daba 500).
+  @Matches(/\S/, { message: 'El título es obligatorio' })
   @MaxLength(100, { message: 'El título no puede superar los 100 caracteres' })
   titulo: string;
 
   @IsString({ message: 'El mensaje tiene que ser un texto' })
-  @IsNotEmpty({ message: 'El mensaje es obligatorio' })
+  @Matches(/\S/, { message: 'El mensaje es obligatorio' })
   @MaxLength(1000, {message: 'El mensaje no puede superar los 1000 caracteres',})
   mensaje: string;
 
