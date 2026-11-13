@@ -10,7 +10,7 @@ const CLAVE_SESION = 'sesionPotreroLibre';
 // El token vence a los 15 minutos (lo decide el back). A los 10 minutos de obtenerlo,
 // se avisa que quedan 5 y se ofrece extender la sesión.
 // Para la presentación con el token de 30 segundos, cambio a 20 * 1000 (aviso a los 20s).
-const AVISO_MS = 20 * 1000;
+const AVISO_MS = 20 * 1000; // Modificar este AVISO correccion 
 
 @Service()
 export class Autenticacion {
