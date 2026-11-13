@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { API_URL } from '../api';
 import { RespuestaAutenticacion, RespuestaRefrescar, Sesion, Usuario } from '../models/usuario';
@@ -7,39 +8,51 @@ import { RespuestaAutenticacion, RespuestaRefrescar, Sesion, Usuario } from '../
 // El nombre con el que se guarda la sesión en el localStorage del navegador.
 const CLAVE_SESION = 'sesionPotreroLibre';
 
-// El token vence a los 15 minutos (lo decide el back). A los 10 minutos de obtenerlo,
-// se avisa que quedan 5 y se ofrece extender la sesión.
-// Para la presentación con el token de 30 segundos, cambio a 20 * 1000 (aviso a los 20s).
-const AVISO_MS = 20 * 1000; // Modificar este AVISO correccion 
+// Cuánto antes de que venza el token aparece el aviso (corrección del Sprint 3).
+// El token dura 15 minutos: el aviso sale cuando quedan 5.
+// Para la presentación (token de '1m' en el back): 30 * 1000, el aviso sale cuando quedan 30 segundos.
+const MARGEN_AVISO_MS = 30 * 1000; // 5 * 60 * 1000;
 
 @Service()
 export class Autenticacion {
   private readonly httpClient = inject(HttpClient);
+  private readonly router = inject(Router);
 
   readonly usuario = signal<Usuario | null>(null);
   readonly token = signal<string | null>(null);
 
-  // true: App muestra el modal de "quedan 5 minutos".
+  // true: App muestra el modal de "tu sesión está por vencer".
   readonly mostrarAviso = signal(false);
-  // true: el login avisa que la sesión venció (lo prende el sesionInterceptor ante un 401).
+  // Cuántos segundos le quedan al token (el modal los muestra como "4:59").
+  readonly segundosRestantes = signal(0);
+  // true: el login avisa que la sesión venció.
   readonly sesionVencida = signal(false);
 
-  private inicio = 0; // Cuándo se obtuvo el token (Date.now()).
-  private contador: number | undefined; // El setTimeout del aviso, para poder cancelarlo.
+  private vence = 0; // Cuándo vence el token, en milisegundos (lo manda el back).
+  private reloj: number | undefined; // El setInterval que revisa la sesión cada segundo.
+  private avisoCerrado = false; // true si eligió "Ahora no": con este token no se vuelve a mostrar.
 
   // La sesión se guarda en el navegador (como 'userMiApp' en el ejemplo de guards),
-  // así no se pierde al recargar la página. Al arrancar, se recupera de ahí y se vuelve a
-  // programar el aviso con el tiempo que le queda. Si el token ya no sirve, lo detectan
-  // la pantalla de cargando (autorizar) o el primer pedido que dé 401.
+  // así no se pierde al recargar la página. Al arrancar, se recupera de ahí.
   constructor() {
     const guardada = localStorage.getItem(CLAVE_SESION);
-    if (guardada) {
-      const sesion: Sesion = JSON.parse(guardada);
-      this.usuario.set(sesion.usuario);
-      this.token.set(sesion.token);
-      this.inicio = sesion.inicio;
-      this.programarAviso();
+    if (!guardada) {
+      return;
     }
+
+    const sesion: Sesion = JSON.parse(guardada);
+    // Si el token ya venció mientras la app estaba cerrada (o es una sesión vieja, sin "vence"),
+    // no sirve: se descarta y el login avisa que hay que volver a entrar.
+    if (!sesion.vence || sesion.vence <= Date.now()) {
+      localStorage.removeItem(CLAVE_SESION);
+      this.sesionVencida.set(true);
+      return;
+    }
+
+    this.usuario.set(sesion.usuario);
+    this.token.set(sesion.token);
+    this.vence = sesion.vence;
+    this.vigilarSesion();
   }
 
   // multipart/form-data: FormData lleva los datos y la imagen juntos.
@@ -66,51 +79,76 @@ export class Autenticacion {
     return this.httpClient.post<RespuestaRefrescar>(`${API_URL}/auth/refrescar`, {});
   }
 
-  // Después del login o el registro: guarda todo y arranca el contador de 10 minutos.
+  // Después del login o el registro: guarda todo y empieza a vigilar el vencimiento.
   guardarSesion(respuesta: RespuestaAutenticacion) {
     this.usuario.set(respuesta.usuario);
     this.token.set(respuesta.token);
-    this.inicio = Date.now();
+    this.vence = respuesta.vence;
     this.sesionVencida.set(false);
     this.guardarEnNavegador();
-    this.programarAviso();
+    this.vigilarSesion();
   }
 
-  // Después de autorizar: los datos actualizados del usuario. El contador no cambia.
+  // Después de autorizar o de editar el perfil: los datos actualizados del usuario.
   actualizarUsuario(usuario: Usuario) {
     this.usuario.set(usuario);
     this.guardarEnNavegador();
   }
 
-  // Después de refrescar: el token nuevo, y el contador vuelve a empezar.
-  actualizarToken(token: string) {
-    this.token.set(token);
-    this.inicio = Date.now();
+  // Después de refrescar: el token nuevo y su vencimiento. El aviso vuelve a esperar.
+  actualizarToken(respuesta: RespuestaRefrescar) {
+    this.token.set(respuesta.token);
+    this.vence = respuesta.vence;
     this.guardarEnNavegador();
-    this.programarAviso();
+    this.vigilarSesion();
+  }
+
+  // "Ahora no" en el modal: se cierra y no vuelve a aparecer con este token.
+  // Cuando venza, revisarSesion() lleva al login.
+  cerrarAviso() {
+    this.avisoCerrado = true;
+    this.mostrarAviso.set(false);
   }
 
   cerrarSesion() {
     localStorage.removeItem(CLAVE_SESION);
     this.usuario.set(null);
     this.token.set(null);
-    clearTimeout(this.contador); // Sin sesión, no hay nada que avisar.
+    clearInterval(this.reloj); // Sin sesión, no hay nada que vigilar.
     this.mostrarAviso.set(false);
   }
 
   private guardarEnNavegador() {
-    const sesion: Sesion = { token: this.token()!, usuario: this.usuario()!, inicio: this.inicio };
+    const sesion: Sesion = { token: this.token()!, usuario: this.usuario()!, vence: this.vence };
     localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
   }
 
-  // setTimeout muestra el aviso cuando se cumplen los 10 minutos.
-  // clearTimeout cancela el anterior: si no, al extender la sesión quedarían dos contadores.
-  // Si ya pasaron los 10 minutos (por ejemplo, al recargar en el minuto 12), "falta" es negativo y setTimeout lo muestra enseguida.
-  private programarAviso() {
-    clearTimeout(this.contador);
+  // Corrección del Sprint 3: en vez de un setTimeout de 10 minutos, una vez por segundo se compara
+  // el reloj real (Date.now()) con el vencimiento del token. Si la pestaña quedó en segundo plano
+  // o la compu se suspendió, el navegador frena los temporizadores; al volver, en el próximo
+  // segundo la app ve cuánto falta de verdad y muestra el aviso, o cierra la sesión si ya venció.
+  private vigilarSesion() {
+    clearInterval(this.reloj); // Si había un reloj de un token anterior, se cancela.
     this.mostrarAviso.set(false);
-    
-    const falta = this.inicio + AVISO_MS - Date.now();
-    this.contador = setTimeout(() => this.mostrarAviso.set(true), falta);
+    this.avisoCerrado = false;
+    this.revisarSesion();
+    this.reloj = setInterval(() => this.revisarSesion(), 1000);
+  }
+
+  private revisarSesion() {
+    const restante = this.vence - Date.now();
+
+    if (restante <= 0) {
+      // El token venció: se cierra la sesión y se va al login con el aviso.
+      this.cerrarSesion();
+      this.sesionVencida.set(true);
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.segundosRestantes.set(Math.ceil(restante / 1000));
+    if (restante <= MARGEN_AVISO_MS && !this.avisoCerrado) {
+      this.mostrarAviso.set(true);
+    }
   }
 }

@@ -31,7 +31,7 @@ export class App {
 
     this.autenticacion.refrescar().subscribe({
       next: (respuesta) => {
-        this.autenticacion.actualizarToken(respuesta.token); // También cierra el modal y reinicia el contador.
+        this.autenticacion.actualizarToken(respuesta); // Guarda el token nuevo y su vencimiento, y cierra el modal.
         this.extendiendo.set(false);
       },
       error: (error) => {
@@ -41,9 +41,17 @@ export class App {
     });
   }
 
-  // "Ahora no": se cierra el aviso. Cuando el token venza, el próximo pedido dará 401 y llevará al login.
+  // "Ahora no": se cierra el aviso. Cuando el token venza, la app va sola al login.
   protected cerrarAviso() {
     this.errorAlExtender.set(null);
-    this.autenticacion.mostrarAviso.set(false);
+    this.autenticacion.cerrarAviso();
+  }
+
+  // El tiempo que le queda a la sesión, como "4:59" (minutos y segundos).
+  protected tiempoRestante(): string {
+    const total = this.autenticacion.segundosRestantes();
+    const minutos = Math.floor(total / 60);
+    const segundos = total % 60;
+    return minutos + ':' + (segundos < 10 ? '0' : '') + segundos;
   }
 }

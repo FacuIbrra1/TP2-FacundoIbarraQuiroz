@@ -1,4 +1,4 @@
-import {IsDateString, IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength} from 'class-validator';
+import {IsDateString, IsEmail, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength} from 'class-validator';
 
 // Los datos del registro (POST /auth/registro).
 // Llega como multipart/form-data (por la imagen): TODOS los campos llegan como texto.
@@ -8,7 +8,8 @@ import {IsDateString, IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, Matches, 
 // Tampoco tiene `repetirPassword`: esa comparación es del formulario de Angular.
 export class CreateUsuarioDto {
   @IsString({ message: 'El nombre tiene que ser un texto' })
-  @IsNotEmpty({ message: 'El nombre es obligatorio' })
+  // \S = algo que no sea un espacio: rechaza "" y "   " (con solo espacios, el schema lo dejaba vacío y daba 500).
+  @Matches(/\S/, { message: 'El nombre es obligatorio' })
   nombre: string;
 
   // Opcional acá: un club no tiene apellido. Que sea obligatorio para jugador y DT lo controla AutenticacionService, porque depende del tipo de cuenta.

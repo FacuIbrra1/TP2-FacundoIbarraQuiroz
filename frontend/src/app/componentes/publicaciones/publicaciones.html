@@ -88,13 +88,23 @@
     } @else {
       <div class="lista">
         @for (publicacion of publicaciones(); track publicacion._id) {
-          <app-tarjeta-publicacion
-            [publicacion]="publicacion"
-            [meGusta]="leGusta(publicacion)"
-            (darMeGusta)="darMeGusta(publicacion)"
-            (quitarMeGusta)="quitarMeGusta(publicacion)"
-            (borrar)="pedirBorrar(publicacion)"
-          />
+          <!-- Corrección del Sprint 3: mientras se edita, el formulario ocupa el lugar de la tarjeta. -->
+          @if (idEditando() === publicacion._id) {
+            <app-formulario-publicacion
+              [publicacion]="publicacion"
+              (publicada)="alEditar($event)"
+              (cancelar)="idEditando.set(null)"
+            />
+          } @else {
+            <app-tarjeta-publicacion
+              [publicacion]="publicacion"
+              [meGusta]="leGusta(publicacion)"
+              (darMeGusta)="darMeGusta(publicacion)"
+              (quitarMeGusta)="quitarMeGusta(publicacion)"
+              (borrar)="pedirBorrar(publicacion)"
+              (editar)="empezarEdicion(publicacion)"
+            />
+          }
         }
       </div>
 

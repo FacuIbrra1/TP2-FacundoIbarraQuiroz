@@ -5,12 +5,13 @@ import { PublicacionesService } from '../../servicios/publicaciones-service';
 import { Publicacion } from '../../models/publicacion';
 import { TarjetaPublicacion } from '../tarjeta-publicacion/tarjeta-publicacion';
 import { ModalConfirmacion } from '../modal-confirmacion/modal-confirmacion';
+import { FormularioPublicacion } from '../formulario-publicacion/formulario-publicacion';
 import { mensajesDeError } from '../../api';
 
 // La página de una publicación (/publicacion/:id): la muestra grande, con sus comentarios
 // debajo. Ahí se puede comentar, editar los comentarios propios, dar me gusta y borrarla.
 @Component({
-  imports: [RouterLink, TarjetaPublicacion, ModalConfirmacion],
+  imports: [RouterLink, TarjetaPublicacion, ModalConfirmacion, FormularioPublicacion],
   selector: 'app-pagina-publicacion',
   styleUrl: './pagina-publicacion.css',
   templateUrl: './pagina-publicacion.html',
@@ -90,6 +91,15 @@ export class PaginaPublicacion implements OnInit, OnDestroy {
       },
       error: (error) => this.errorAccion.set(mensajesDeError(error)[0]),
     });
+  }
+
+  // ---- Editar (corrección del Sprint 3) ----
+
+  protected readonly editando = signal(false);
+
+  protected alEditar(editada: Publicacion) {
+    this.publicacion.set(editada);
+    this.editando.set(false);
   }
 
   // ---- Borrar (con modal) ----

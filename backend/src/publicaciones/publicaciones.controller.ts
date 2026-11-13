@@ -1,10 +1,11 @@
-import {Body, Controller, Delete, Get, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { PublicacionesService } from './publicaciones.service.js';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto.js';
 import { AuthGuard } from '../guards/auth/auth.guard.js';
 import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
+import { UpdatePublicacionDto } from './dto/update-publicacion.dto.js';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 
@@ -28,6 +29,13 @@ export class PublicacionesController {
   @Get()
   listar(@Query() filtros: ListarPublicacionesDto) {
     return this.publicacionesService.listar(filtros);
+  }
+
+  // PATCH /publicaciones/:id → edita el título, el mensaje o la categoría (solo quien la publicó).
+  // Corrección del Sprint 3. Va con JSON: la imagen no se cambia.
+  @Patch(':id')
+  editar(@Param('id', ParseObjectIdPipe) id: Types.ObjectId, @Body() updatePublicacionDto: UpdatePublicacionDto, @Req() request: any) {
+    return this.publicacionesService.editar(id, updatePublicacionDto, request.user.sub);
   }
 
   // DELETE /publicaciones/:id → baja lógica (no se borra de la base: pasa a activa: false).

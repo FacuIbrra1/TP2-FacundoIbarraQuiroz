@@ -1,0 +1,71 @@
+<div class="tarjeta formulario">
+  <h2>Editar mi perfil</h2>
+
+  @if (erroresServidor().length > 0) {
+    <div class="errores-servidor" role="alert">
+      <ul>
+        @for (mensaje of erroresServidor(); track $index) {
+          <li>{{ mensaje }}</li>
+        }
+      </ul>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <div class="fila">
+      <div class="campo">
+        <label for="perfil-nombre">{{ esClub() ? 'Nombre de la institución' : 'Nombre' }}</label>
+        <input id="perfil-nombre" type="text" formControlName="nombre" [class.es-invalido]="esCampoInvalido('nombre')" />
+        @if (esCampoInvalido('nombre')) {
+          <p class="error">El nombre es obligatorio.</p>
+        }
+      </div>
+
+      @if (!esClub()) {
+        <div class="campo">
+          <label for="perfil-apellido">Apellido</label>
+          <input id="perfil-apellido" type="text" formControlName="apellido" [class.es-invalido]="esCampoInvalido('apellido')" />
+          @if (esCampoInvalido('apellido')) {
+            <p class="error">El apellido es obligatorio.</p>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="perfil-descripcion">Descripción</label>
+      <textarea id="perfil-descripcion" rows="3" formControlName="descripcion" [class.es-invalido]="esCampoInvalido('descripcion')"></textarea>
+      <p class="ayuda">{{ form.get('descripcion')?.value?.length ?? 0 }}/200</p>
+      @if (esCampoInvalido('descripcion')) {
+        <p class="error">La descripción no puede superar los 200 caracteres.</p>
+      }
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="perfil-fecha">{{ esClub() ? 'Fecha de creación' : 'Fecha de nacimiento' }}</label>
+        <input id="perfil-fecha" type="date" formControlName="fechaNacimiento" [class.es-invalido]="esCampoInvalido('fechaNacimiento')" />
+        @if (esCampoInvalido('fechaNacimiento')) {
+          <p class="error">La fecha es obligatoria.</p>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="perfil-imagen">Foto nueva <span class="ayuda">(opcional)</span></label>
+        <input id="perfil-imagen" type="file" accept="image/*" (change)="alElegirImagen($event)" [class.es-invalido]="errorImagen()" />
+        @if (errorImagen()) {
+          <p class="error">{{ errorImagen() }}</p>
+        } @else {
+          <p class="ayuda">Si no elegís ninguna, queda la que tenés.</p>
+        }
+      </div>
+    </div>
+
+    <p class="ayuda">El correo, el nombre de usuario y el tipo de cuenta no se pueden cambiar.</p>
+
+    <div class="botones">
+      <button class="boton boton-secundario" type="button" [disabled]="enviando()" (click)="cancelar.emit()">Cancelar</button>
+      <button class="boton" type="submit" [disabled]="enviando()">{{ enviando() ? 'Guardando…' : 'Guardar cambios' }}</button>
+    </div>
+  </form>
+</div>

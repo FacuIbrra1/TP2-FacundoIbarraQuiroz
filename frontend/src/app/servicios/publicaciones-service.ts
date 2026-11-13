@@ -36,6 +36,11 @@ export class PublicacionesService {
     return this.httpClient.post<Publicacion>(`${API_URL}/publicaciones`, datos);
   }
 
+  // PATCH /publicaciones/:id (corrección del Sprint 3): título, mensaje y categoría. Va con JSON: la imagen no cambia.
+  editar(id: string, datos: { titulo: string; mensaje: string; categoria: string }): Observable<Publicacion> {
+    return this.httpClient.patch<Publicacion>(`${API_URL}/publicaciones/${id}`, datos);
+  }
+
   // Baja lógica: el back la marca como inactiva.
   borrar(id: string): Observable<{ message: string }> {
     return this.httpClient.delete<{ message: string }>(`${API_URL}/publicaciones/${id}`);

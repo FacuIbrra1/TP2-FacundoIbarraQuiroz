@@ -34,11 +34,11 @@
   <router-outlet />
 </main>
 
-<!-- A los 10 minutos de iniciar sesión (el token vence a los 15). -->
+<!-- Cuando al token le quedan 5 minutos (30 segundos en la presentación). El tiempo se actualiza cada segundo. -->
 @if (autenticacion.mostrarAviso()) {
   <app-modal-confirmacion
     titulo="Tu sesión está por vencer"
-    mensaje="Quedan 5 minutos de sesión. ¿Querés extenderla otros 15 minutos?"
+    [mensaje]="'Tu sesión vence en ' + tiempoRestante() + '. ¿Querés extenderla?'"
     textoConfirmar="Extender sesión"
     textoCancelar="Ahora no"
     [procesando]="extendiendo()"

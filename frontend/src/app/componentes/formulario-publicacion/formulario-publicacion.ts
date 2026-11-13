@@ -1,4 +1,4 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PublicacionesService } from '../../servicios/publicaciones-service';
 import { Publicacion } from '../../models/publicacion';
@@ -7,15 +7,19 @@ import { mensajesDeError } from '../../api';
 
 // El formulario para publicar. Se muestra arriba del listado y, cuando la publicación
 // se crea, le avisa a la página con output() para que la cierre y recargue el listado.
+// Corrección del Sprint 3: si recibe una publicación (input), sirve para editarla.
 @Component({
   imports: [ReactiveFormsModule],
   selector: 'app-formulario-publicacion',
   styleUrl: './formulario-publicacion.css',
   templateUrl: './formulario-publicacion.html',
 })
-export class FormularioPublicacion {
+export class FormularioPublicacion implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly publicacionesService = inject(PublicacionesService);
+
+  // Si llega una publicación, el formulario es para editarla (sin el campo de la imagen).
+  publicacion = input<Publicacion | null>(null);
 
   publicada = output<Publicacion>();
   cancelar = output<void>();
@@ -28,11 +32,23 @@ export class FormularioPublicacion {
     { valor: 'prueba', nombre: 'Prueba' },
   ];
 
-  protected form: FormGroup = this.fb.group({
-    titulo: ['', [Validators.required, Validators.maxLength(100), validarTextoNoVacio]],
-    mensaje: ['', [Validators.required, Validators.maxLength(1000), validarTextoNoVacio]],
-    categoria: ['general', Validators.required],
-  });
+  protected form: FormGroup = this.armarFormulario('', '', 'general');
+
+  // Al editar, el formulario arranca con los datos de la publicación (recién en ngOnInit llega el input).
+  ngOnInit(): void {
+    const publicacion = this.publicacion();
+    if (publicacion) {
+      this.form = this.armarFormulario(publicacion.titulo, publicacion.mensaje, publicacion.categoria);
+    }
+  }
+
+  private armarFormulario(titulo: string, mensaje: string, categoria: string): FormGroup {
+    return this.fb.group({
+      titulo: [titulo, [Validators.required, Validators.maxLength(100), validarTextoNoVacio]],
+      mensaje: [mensaje, [Validators.required, Validators.maxLength(1000), validarTextoNoVacio]],
+      categoria: [categoria, Validators.required],
+    });
+  }
 
   // La imagen es opcional. Como en el registro, el campo file se maneja aparte.
   protected readonly imagen = signal<File | null>(null);
@@ -72,8 +88,29 @@ export class FormularioPublicacion {
       return;
     }
 
-    // multipart/form-data, como el registro: los textos y la imagen viajan juntos.
     const valores = this.form.value;
+
+    // Editar: PATCH con los tres campos (la imagen no se cambia).
+    const editando = this.publicacion();
+    if (editando) {
+      this.enviando.set(true);
+      this.erroresServidor.set([]);
+      this.publicacionesService
+        .editar(editando._id, { titulo: valores.titulo.trim(), mensaje: valores.mensaje.trim(), categoria: valores.categoria })
+        .subscribe({
+          next: (publicacion) => {
+            this.enviando.set(false);
+            this.publicada.emit(publicacion);
+          },
+          error: (error) => {
+            this.erroresServidor.set(mensajesDeError(error));
+            this.enviando.set(false);
+          },
+        });
+      return;
+    }
+
+    // Crear: multipart/form-data, como el registro: los textos y la imagen viajan juntos.
     const datos = new FormData();
     datos.append('titulo', valores.titulo.trim());
     datos.append('mensaje', valores.mensaje.trim());

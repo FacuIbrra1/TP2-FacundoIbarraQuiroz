@@ -5,10 +5,11 @@ import { Autenticacion } from '../../servicios/autenticacion';
 import { PublicacionesService } from '../../servicios/publicaciones-service';
 import { Publicacion } from '../../models/publicacion';
 import { TarjetaPublicacion } from '../tarjeta-publicacion/tarjeta-publicacion';
+import { FormularioPerfil } from '../formulario-perfil/formulario-perfil';
 import { mensajesDeError } from '../../api';
 
 @Component({
-  imports: [DatePipe, RouterLink, TarjetaPublicacion],
+  imports: [DatePipe, RouterLink, TarjetaPublicacion, FormularioPerfil],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -21,10 +22,31 @@ export class MiPerfil implements OnInit {
   protected readonly cargando = signal(false);
   protected readonly erroresServidor = signal<string[]>([]);
 
+  // Corrección del Sprint 3: editar el perfil.
+  protected readonly editando = signal(false);
+  protected readonly avisoGuardado = signal(false);
+
   ngOnInit(): void {
+    this.cargarPublicaciones();
+  }
+
+  protected empezarEdicion() {
+    this.avisoGuardado.set(false);
+    this.editando.set(true);
+  }
+
+  // Guardado: se cierra el formulario y se vuelven a pedir las publicaciones,
+  // porque cada tarjeta muestra el nombre y la foto del autor.
+  protected alGuardarPerfil() {
+    this.editando.set(false);
+    this.avisoGuardado.set(true);
+    this.cargarPublicaciones();
+  }
+
+  private cargarPublicaciones() {
     const usuario = this.autenticacion.usuario();
     if (!usuario) {
-      return; // Sin sesión no se pide nada (los guards llegan en el Sprint 3).
+      return; // Sin sesión no se pide nada (igual el sesionGuard no deja llegar acá).
     }
 
     // Mis últimas 3: el mismo listado de la página de publicaciones, filtrado por mi id.

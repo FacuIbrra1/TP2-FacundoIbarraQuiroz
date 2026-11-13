@@ -2,41 +2,58 @@
   <h1>Mi perfil</h1>
 
   @if (autenticacion.usuario()) {
-    <div class="tarjeta datos">
-      <img
-        class="foto"
-        [src]="autenticacion.usuario()?.imagenUrl"
-        alt="Foto de perfil"
-        width="132"
-        height="132"
+    @if (avisoGuardado()) {
+      <p class="aviso-guardado" role="status">¡Listo! Guardamos los cambios de tu perfil.</p>
+    }
+
+    <!-- Corrección del Sprint 3: el formulario reemplaza a la tarjeta de datos mientras se edita. -->
+    @if (editando()) {
+      <app-formulario-perfil
+        [usuario]="autenticacion.usuario()!"
+        (guardado)="alGuardarPerfil()"
+        (cancelar)="editando.set(false)"
       />
+    } @else {
+      <div class="tarjeta datos">
+        <img
+          class="foto"
+          [src]="autenticacion.usuario()?.imagenUrl"
+          alt="Foto de perfil"
+          width="132"
+          height="132"
+        />
 
-      <div>
-        <span class="etiqueta-tipo">{{ nombreDelTipo(autenticacion.usuario()?.tipo) }}</span>
-        <h2>{{ autenticacion.usuario()?.nombre }} {{ autenticacion.usuario()?.apellido }}</h2>
-        <p class="username">&#64;{{ autenticacion.usuario()?.username }}</p>
+        <div>
+          <span class="etiqueta-tipo">{{ nombreDelTipo(autenticacion.usuario()?.tipo) }}</span>
+          <h2>{{ autenticacion.usuario()?.nombre }} {{ autenticacion.usuario()?.apellido }}</h2>
+          <p class="username">&#64;{{ autenticacion.usuario()?.username }}</p>
 
-        @if (autenticacion.usuario()?.descripcion) {
-          <p class="descripcion">{{ autenticacion.usuario()?.descripcion }}</p>
-        }
+          @if (autenticacion.usuario()?.descripcion) {
+            <p class="descripcion">{{ autenticacion.usuario()?.descripcion }}</p>
+          }
 
-        <dl>
-          <div>
-            <dt>Correo</dt>
-            <dd>{{ autenticacion.usuario()?.email }}</dd>
-          </div>
-          <div>
-            <dt>{{ esClub() ? 'Fecha de creación' : 'Fecha de nacimiento' }}</dt>
-            <!-- 'UTC': la fecha se guarda a las 00:00 UTC; sin esto, en Argentina se vería el día anterior. -->
-            <dd>{{ autenticacion.usuario()?.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
-          </div>
-          <div>
-            <dt>Perfil</dt>
-            <dd>{{ autenticacion.usuario()?.perfil === 'administrador' ? 'Administrador' : 'Usuario' }}</dd>
-          </div>
-        </dl>
+          <dl>
+            <div>
+              <dt>Correo</dt>
+              <dd>{{ autenticacion.usuario()?.email }}</dd>
+            </div>
+            <div>
+              <dt>{{ esClub() ? 'Fecha de creación' : 'Fecha de nacimiento' }}</dt>
+              <!-- 'UTC': la fecha se guarda a las 00:00 UTC; sin esto, en Argentina se vería el día anterior. -->
+              <dd>{{ autenticacion.usuario()?.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+            </div>
+            <div>
+              <dt>Perfil</dt>
+              <dd>{{ autenticacion.usuario()?.perfil === 'administrador' ? 'Administrador' : 'Usuario' }}</dd>
+            </div>
+          </dl>
+
+          <button class="boton boton-secundario boton-editar" type="button" (click)="empezarEdicion()">
+            Editar perfil
+          </button>
+        </div>
       </div>
-    </div>
+    }
 
     <section class="mis-publicaciones">
       <h2 class="subtitulo">Mis últimas publicaciones</h2>

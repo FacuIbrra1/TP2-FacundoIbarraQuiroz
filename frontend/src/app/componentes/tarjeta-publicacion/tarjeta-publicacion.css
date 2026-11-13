@@ -84,6 +84,20 @@ h2 {
   margin-left: auto;
 }
 
+/* Si están los dos botones, "Editar" va a la derecha junto a "Borrar". */
+.editar {
+  margin-left: auto;
+}
+
+.editar + .borrar {
+  margin-left: 0;
+}
+
+.editar:hover {
+  color: var(--azul);
+  border-color: var(--azul);
+}
+
 .borrar:hover {
   color: var(--error);
   border-color: var(--error);

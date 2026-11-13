@@ -121,6 +121,7 @@ export class Publicaciones implements OnInit {
   // ---- Publicar ----
 
   protected abrirFormulario() {
+    this.idEditando.set(null);
     this.formularioAbierto.set(true);
   }
 
@@ -136,6 +137,23 @@ export class Publicaciones implements OnInit {
     this.pagina.set(0);
     this.cargar();
     this.avisoPublicada.set(true);
+  }
+
+
+  // ---- Editar (corrección del Sprint 3) ----
+
+  // El id de la publicación que se está editando (null si ninguna).
+  protected readonly idEditando = signal<string | null>(null);
+
+  protected empezarEdicion(publicacion: Publicacion) {
+    this.formularioAbierto.set(false); // Un solo formulario a la vez.
+    this.idEditando.set(publicacion._id);
+  }
+
+  // Se reemplaza solo esa publicación en la lista, igual que al dar me gusta.
+  protected alEditar(editada: Publicacion) {
+    this.publicaciones.update((lista) => lista.map((p) => (p._id === editada._id ? editada : p)));
+    this.idEditando.set(null);
   }
 
 

@@ -37,6 +37,10 @@
       <a class="ver" [routerLink]="['/publicacion', publicacion()._id]">Ver y comentar</a>
     }
 
+    @if (acciones() && esAutor()) {
+      <button type="button" class="editar" (click)="editar.emit()">Editar</button>
+    }
+
     @if (acciones() && puedeBorrar()) {
       <button type="button" class="borrar" (click)="borrar.emit()">Borrar</button>
     }

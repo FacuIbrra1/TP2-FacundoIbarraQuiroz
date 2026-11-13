@@ -26,6 +26,7 @@ export class TarjetaPublicacion {
   darMeGusta = output<void>();
   quitarMeGusta = output<void>();
   borrar = output<void>();
+  editar = output<void>(); // Corrección del Sprint 3.
 
   protected alTocarMeGusta() {
     if (this.meGusta()) {
@@ -33,6 +34,11 @@ export class TarjetaPublicacion {
     } else {
       this.darMeGusta.emit();
     }
+  }
+
+  // Solo la puede editar quien la publicó (el back igual lo controla: 403).
+  protected esAutor(): boolean {
+    return this.autenticacion.usuario()?._id === this.publicacion().autor._id;
   }
 
   // Solo la puede borrar quien la publicó o un administrador (lo mismo que controla el back).

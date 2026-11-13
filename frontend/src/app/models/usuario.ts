@@ -13,22 +13,24 @@ export interface Usuario {
   activo: boolean;
 }
 
-// La respuesta del registro y del login.
+// La respuesta del registro y del login. "vence": cuándo vence el token, en milisegundos
+// (como Date.now()). Lo agrega el back desde la corrección del Sprint 3.
 export interface RespuestaAutenticacion {
   token: string;
   usuario: Usuario;
+  vence: number;
 }
 
-// Lo que se guarda en el localStorage: el token, el usuario y cuándo se obtuvo el token
-// (Date.now(), en milisegundos). Con "inicio" se sabe cuándo mostrar el aviso de los 10 minutos,
-// aunque se recargue la página.
+// Lo que se guarda en el localStorage: el token, el usuario y cuándo vence el token.
+// Con "vence" se sabe cuándo mostrar el aviso, aunque se recargue la página o se cambie de pestaña.
 export interface Sesion {
   token: string;
   usuario: Usuario;
-  inicio: number;
+  vence: number;
 }
 
-// La respuesta de POST /auth/refrescar.
+// La respuesta de POST /auth/refrescar: el token nuevo y cuándo vence.
 export interface RespuestaRefrescar {
   token: string;
+  vence: number;
 }

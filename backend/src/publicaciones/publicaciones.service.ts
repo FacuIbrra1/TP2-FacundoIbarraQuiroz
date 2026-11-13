@@ -6,6 +6,7 @@ import { CreatePublicacionDto } from './dto/create-publicacion.dto.js';
 import { CloudinaryService } from '../cloudinary/cloudinary.service.js';
 import { ListarPublicacionesDto } from './dto/listar-publicaciones.dto.js';
 import { Like } from './entities/like.entity.js';
+import { UpdatePublicacionDto } from './dto/update-publicacion.dto.js';
 
 // Los datos del autor que se muestran con cada publicación (nunca la contraseña ni el correo).
 export const DATOS_AUTOR = 'nombre apellido username imagenUrl tipo';
@@ -80,6 +81,31 @@ export class PublicacionesService {
       .skip(offset) // Se saltea las primeras "offset" (las de las páginas anteriores).
       .limit(limit) // Trae como máximo "limit".
       .populate('autor', DATOS_AUTOR);
+  }
+
+
+  // ---- EDITAR ----
+  async editar(id: Types.ObjectId, updatePublicacionDto: UpdatePublicacionDto, usuarioId: string) {
+    const publicacion = await this.buscarPublicacionActiva(id); // 404
+
+    // 403: solo la puede editar quien la publicó (un administrador puede borrarla, pero no cambiarle el texto).
+    if (publicacion.autor.toString() !== usuarioId) {
+      throw new ForbiddenException('Solo podés editar tus publicaciones');
+    }
+
+    // Solo se cambia lo que llegó (en un PATCH, todos los campos son opcionales).
+    if (updatePublicacionDto.titulo !== undefined) {
+      publicacion.titulo = updatePublicacionDto.titulo;
+    }
+    if (updatePublicacionDto.mensaje !== undefined) {
+      publicacion.mensaje = updatePublicacionDto.mensaje;
+    }
+    if (updatePublicacionDto.categoria !== undefined) {
+      publicacion.categoria = updatePublicacionDto.categoria;
+    }
+    await publicacion.save();
+
+    return await this.publicacionModel.findById(id).populate('autor', DATOS_AUTOR);
   }
 
 

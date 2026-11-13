@@ -18,15 +18,25 @@
       </div>
     }
 
-    <app-tarjeta-publicacion
-      [publicacion]="publicacion()!"
-      [meGusta]="meGusta()"
-      [grande]="true"
-      [mostrarComentarios]="true"
-      (darMeGusta)="darMeGusta(publicacion()!)"
-      (quitarMeGusta)="quitarMeGusta(publicacion()!)"
-      (borrar)="pedirBorrar()"
-    />
+    <!-- Corrección del Sprint 3: mientras se edita, el formulario ocupa el lugar de la tarjeta. -->
+    @if (editando()) {
+      <app-formulario-publicacion
+        [publicacion]="publicacion()!"
+        (publicada)="alEditar($event)"
+        (cancelar)="editando.set(false)"
+      />
+    } @else {
+      <app-tarjeta-publicacion
+        [publicacion]="publicacion()!"
+        [meGusta]="meGusta()"
+        [grande]="true"
+        [mostrarComentarios]="true"
+        (darMeGusta)="darMeGusta(publicacion()!)"
+        (quitarMeGusta)="quitarMeGusta(publicacion()!)"
+        (borrar)="pedirBorrar()"
+        (editar)="editando.set(true)"
+      />
+    }
 
     @if (pidiendoBorrar()) {
       <app-modal-confirmacion

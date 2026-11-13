@@ -107,7 +107,15 @@ export class AutenticacionService {
 
     const datosUsuario = await this.usuariosService.buscarPorId(usuario._id);
 
-    return { token: token, usuario: datosUsuario };
+    return { token: token, usuario: datosUsuario, vence: this.vencimiento(token) };
+  }
+
+  // Corrección del Sprint 3: cuándo vence el token, en milisegundos (como Date.now() en el front).
+  // decode lee el contenido del token (sin volver a verificar la firma: lo acabamos de firmar).
+  // "exp" viene en segundos: por eso se multiplica por 1000.
+  private vencimiento(token: string): number {
+    const contenido = this.jwtService.decode(token);
+    return contenido.exp * 1000;
   }
 
   
@@ -134,6 +142,6 @@ export class AutenticacionService {
       perfil: payload.perfil,
     };
     const token = await this.jwtService.signAsync(nuevoPayload);
-    return { token: token };
+    return { token: token, vence: this.vencimiento(token) };
   }
 }

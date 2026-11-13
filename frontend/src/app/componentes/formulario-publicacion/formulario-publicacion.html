@@ -1,5 +1,5 @@
 <div class="tarjeta formulario">
-  <h2>Nueva publicación</h2>
+  <h2>{{ publicacion() ? 'Editar publicación' : 'Nueva publicación' }}</h2>
 
   @if (erroresServidor().length > 0) {
     <div class="errores-servidor" role="alert">
@@ -61,21 +61,24 @@
         </select>
       </div>
 
-      <div class="campo">
-        <label for="imagen-publicacion">Imagen <span class="ayuda">(opcional)</span></label>
-        <input
-          id="imagen-publicacion"
-          type="file"
-          accept="image/*"
-          (change)="alElegirImagen($event)"
-          [class.es-invalido]="errorImagen()"
-        />
-        @if (errorImagen()) {
-          <p class="error">{{ errorImagen() }}</p>
-        } @else {
-          <p class="ayuda">JPG, PNG o WEBP, hasta 2 MB.</p>
-        }
-      </div>
+      <!-- Al editar no se cambia la imagen. -->
+      @if (!publicacion()) {
+        <div class="campo">
+          <label for="imagen-publicacion">Imagen <span class="ayuda">(opcional)</span></label>
+          <input
+            id="imagen-publicacion"
+            type="file"
+            accept="image/*"
+            (change)="alElegirImagen($event)"
+            [class.es-invalido]="errorImagen()"
+          />
+          @if (errorImagen()) {
+            <p class="error">{{ errorImagen() }}</p>
+          } @else {
+            <p class="ayuda">JPG, PNG o WEBP, hasta 2 MB.</p>
+          }
+        </div>
+      }
     </div>
 
     <div class="botones">
@@ -88,7 +91,11 @@
         Cancelar
       </button>
       <button class="boton" type="submit" [disabled]="enviando()">
-        {{ enviando() ? 'Publicando…' : 'Publicar' }}
+        @if (publicacion()) {
+          {{ enviando() ? 'Guardando…' : 'Guardar cambios' }}
+        } @else {
+          {{ enviando() ? 'Publicando…' : 'Publicar' }}
+        }
       </button>
     </div>
   </form>
