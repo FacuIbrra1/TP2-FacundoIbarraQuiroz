@@ -5,7 +5,7 @@ export interface Autor {
   apellido: string;
   username: string;
   imagenUrl: string;
-  tipo: string; // 'jugador' | 'dt' | 'club'
+  tipo: string; // 'jugador' | 'dt' | 'club' | 'administrador' (este último, solo creado desde el dashboard)
 }
 
 // Una publicación, tal como la devuelve el back.

@@ -9,7 +9,7 @@ export interface Usuario {
   descripcion: string;
   imagenUrl: string;
   perfil: string; // 'usuario' | 'administrador'
-  tipo: string; // 'jugador' | 'dt' | 'club'
+  tipo: string; // 'jugador' | 'dt' | 'club' | 'administrador' (este último, solo creado desde el dashboard)
   activo: boolean;
 }
 

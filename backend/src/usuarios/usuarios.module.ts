@@ -12,10 +12,10 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module.js';
       { name: Usuario.name, schema: UsuarioSchema },
       { name: Ingreso.name, schema: IngresoSchema }, // Sprint 3: cada login o registro.
     ]),
-    CloudinaryModule, // Para la foto nueva al editar el perfil.
+    CloudinaryModule, // Para la foto del registro, del alta del administrador y de editar el perfil.
   ],
   controllers: [UsuariosController],
   providers: [UsuariosService],
-  exports: [UsuariosService], // Lo usa AutenticacionModule para registrar y buscar usuarios.
+  exports: [UsuariosService], // Lo usa AutenticacionModule para registrar, buscar usuarios y anotar los ingresos.
 })
 export class UsuariosModule {}

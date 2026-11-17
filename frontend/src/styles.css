@@ -184,3 +184,34 @@ img {
   outline: 2px solid var(--verde);
   outline-offset: 2px;
 }
+
+/* ---------- Sprint 4: botón "Mostrar" de las contraseñas (directiva appMostrarClave) ---------- */
+/* Global y no en cada componente: lo usan el login y el registro. */
+
+.campo-clave {
+  position: relative;
+}
+
+.campo .campo-clave input {
+  padding-right: 92px; /* Para que lo escrito no quede debajo del botón. */
+}
+
+.boton-mostrar-clave {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--azul);
+  cursor: pointer;
+}
+
+.boton-mostrar-clave:hover {
+  background: var(--superficie-alta);
+}

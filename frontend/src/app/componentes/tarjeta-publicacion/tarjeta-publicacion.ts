@@ -4,12 +4,16 @@ import { RouterLink } from '@angular/router';
 import { Publicacion } from '../../models/publicacion';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { ListaComentarios } from '../lista-comentarios/lista-comentarios';
+import { TipoCuentaPipe } from '../../pipes/tipo-cuenta';
+import { HaceTiempoPipe } from '../../pipes/hace-tiempo';
+import { ImagenRespaldo } from '../../directivas/imagen-respaldo';
+import { ColorCategoria } from '../../directivas/color-categoria';
 
 // Cada publicación es un componente (lo pide el enunciado).
 // Recibe la publicación con input() y avisa al padre con output(), como el Hijo del ejemplo de clase:
 // la tarjeta no llama al back, de eso se encarga la página que la muestra.
 @Component({
-  imports: [DatePipe, RouterLink, ListaComentarios],
+  imports: [DatePipe, RouterLink, ListaComentarios, TipoCuentaPipe, HaceTiempoPipe, ImagenRespaldo, ColorCategoria],
   selector: 'app-tarjeta-publicacion',
   styleUrl: './tarjeta-publicacion.css',
   templateUrl: './tarjeta-publicacion.html',
@@ -50,14 +54,10 @@ export class TarjetaPublicacion {
     return usuario._id === this.publicacion().autor._id || usuario.perfil === 'administrador';
   }
 
-  protected nombreDelTipo(tipo: string): string {
-    if (tipo === 'dt') {
-      return 'Director técnico';
-    }
-    if (tipo === 'club') {
-      return 'Club';
-    }
-    return 'Jugador';
+  // Sprint 4: un administrador ve el botón en TODAS las publicaciones. En las ajenas dice "Dar de baja"
+  // (la publicación y sus comentarios dejan de estar disponibles); en las propias, "Borrar".
+  protected textoBorrar(): string {
+    return this.esAutor() ? 'Borrar' : 'Dar de baja';
   }
 
   protected nombreDeCategoria(categoria: string): string {

@@ -36,7 +36,8 @@ h1 {
 
 .opciones {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Tantas columnas como opciones: 3 en el registro, 4 en el alta de un administrador. */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
 
@@ -103,6 +104,27 @@ input[type='file']::file-selector-button {
   text-align: center;
   margin: 18px 0 0;
   color: var(--texto-suave);
+}
+
+/* ---------- Sprint 4: el alta de usuarios del dashboard ---------- */
+
+/* En el dashboard ocupa el ancho de la página. */
+.en-dashboard {
+  max-width: none;
+}
+
+h2 {
+  font-size: 1.6rem;
+}
+
+.perfiles {
+  grid-template-columns: 1fr 1fr;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 @media (max-width: 640px) {

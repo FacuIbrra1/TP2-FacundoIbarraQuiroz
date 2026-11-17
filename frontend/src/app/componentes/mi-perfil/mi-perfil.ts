@@ -7,9 +7,12 @@ import { Publicacion } from '../../models/publicacion';
 import { TarjetaPublicacion } from '../tarjeta-publicacion/tarjeta-publicacion';
 import { FormularioPerfil } from '../formulario-perfil/formulario-perfil';
 import { mensajesDeError } from '../../api';
+import { TipoCuentaPipe } from '../../pipes/tipo-cuenta';
+import { EdadPipe } from '../../pipes/edad';
+import { ImagenRespaldo } from '../../directivas/imagen-respaldo';
 
 @Component({
-  imports: [DatePipe, RouterLink, TarjetaPublicacion, FormularioPerfil],
+  imports: [DatePipe, RouterLink, TarjetaPublicacion, FormularioPerfil, TipoCuentaPipe, EdadPipe, ImagenRespaldo],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -70,13 +73,4 @@ export class MiPerfil implements OnInit {
     return this.autenticacion.usuario()?.tipo === 'club';
   }
 
-  protected nombreDelTipo(tipo: string | undefined): string {
-    if (tipo === 'dt') {
-      return 'Director técnico';
-    }
-    if (tipo === 'club') {
-      return 'Club';
-    }
-    return 'Jugador';
-  }
 }

@@ -135,7 +135,7 @@
   @if (publicacionABorrar()) {
     <app-modal-confirmacion
       titulo="¿Borrar esta publicación?"
-      [mensaje]="'«' + publicacionABorrar()?.titulo + '» va a dejar de aparecer en el listado.'"
+      [mensaje]="'«' + publicacionABorrar()?.titulo + '» y sus comentarios van a dejar de estar disponibles.'"
       textoConfirmar="Sí, borrar"
       [peligro]="true"
       [procesando]="borrando()"

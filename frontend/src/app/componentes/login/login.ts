@@ -5,13 +5,14 @@ import { Autenticacion } from '../../servicios/autenticacion';
 import { validarPassword } from '../../validadores/password';
 import { mensajesDeError } from '../../api';
 import { validarUsuarioOCorreo } from '../../validadores/email';
+import { MostrarClave } from '../../directivas/mostrar-clave';
 
 // Acceso rápido (corrección del Sprint 2, 10/11): la cuenta de administrador de prueba.
 // Tiene que existir en la base con perfil "administrador".
 const ADMINISTRADOR_DE_PRUEBA = { usuario: 'administrador', password: 'AdminPotrero2026' };
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, MostrarClave],
   selector: 'app-login',
   styleUrl: './login.css',
   templateUrl: './login.html',

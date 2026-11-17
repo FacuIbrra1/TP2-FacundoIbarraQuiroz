@@ -21,10 +21,11 @@
           alt="Foto de perfil"
           width="132"
           height="132"
+          appImagenRespaldo
         />
 
         <div>
-          <span class="etiqueta-tipo">{{ nombreDelTipo(autenticacion.usuario()?.tipo) }}</span>
+          <span class="etiqueta-tipo">{{ autenticacion.usuario()?.tipo | tipoCuenta }}</span>
           <h2>{{ autenticacion.usuario()?.nombre }} {{ autenticacion.usuario()?.apellido }}</h2>
           <p class="username">&#64;{{ autenticacion.usuario()?.username }}</p>
 
@@ -40,7 +41,11 @@
             <div>
               <dt>{{ esClub() ? 'Fecha de creación' : 'Fecha de nacimiento' }}</dt>
               <!-- 'UTC': la fecha se guarda a las 00:00 UTC; sin esto, en Argentina se vería el día anterior. -->
-              <dd>{{ autenticacion.usuario()?.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+              <!-- Sprint 4: pipe propio edad (años desde esa fecha: la edad, o los años del club). -->
+              <dd>
+                {{ autenticacion.usuario()?.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}
+                <span class="ayuda">({{ autenticacion.usuario()?.fechaNacimiento | edad }})</span>
+              </dd>
             </div>
             <div>
               <dt>Perfil</dt>

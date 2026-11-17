@@ -3,9 +3,10 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { Autenticacion } from './servicios/autenticacion';
 import { ModalConfirmacion } from './componentes/modal-confirmacion/modal-confirmacion';
 import { mensajesDeError } from './api';
+import { ImagenRespaldo } from './directivas/imagen-respaldo';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalConfirmacion],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalConfirmacion, ImagenRespaldo],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

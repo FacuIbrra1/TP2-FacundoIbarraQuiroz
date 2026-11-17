@@ -1,14 +1,21 @@
 <article class="tarjeta publicacion" [class.grande]="grande()">
   <header class="encabezado">
-    <img class="foto" [src]="publicacion().autor.imagenUrl" alt="" width="44" height="44" />
+    <!-- Sprint 4: directiva appImagenRespaldo (si la foto no carga, una silueta). -->
+    <img class="foto" [src]="publicacion().autor.imagenUrl" alt="" width="44" height="44" appImagenRespaldo />
     <div class="datos-autor">
       <p class="autor">{{ publicacion().autor.nombre }} {{ publicacion().autor.apellido }}</p>
+      <!-- Sprint 4: pipes propios tipoCuenta y haceTiempo. La fecha exacta queda en el title (al pasar el mouse). -->
       <p class="ayuda detalle">
-        &#64;{{ publicacion().autor.username }} · {{ nombreDelTipo(publicacion().autor.tipo) }} ·
-        {{ publicacion().fecha | date: 'dd/MM/yyyy HH:mm' }}
+        &#64;{{ publicacion().autor.username }} · {{ publicacion().autor.tipo | tipoCuenta }} ·
+        <time [attr.datetime]="publicacion().fecha" [title]="publicacion().fecha | date: 'dd/MM/yyyy HH:mm'">{{
+          publicacion().fecha | haceTiempo
+        }}</time>
       </p>
     </div>
-    <span class="categoria">{{ nombreDeCategoria(publicacion().categoria) }}</span>
+    <!-- Sprint 4: directiva appColorCategoria (cada categoría con su color). -->
+    <span class="categoria" [appColorCategoria]="publicacion().categoria">{{
+      nombreDeCategoria(publicacion().categoria)
+    }}</span>
   </header>
 
   <!-- En el listado y en Mi Perfil, el título lleva a la página de la publicación. -->
@@ -42,7 +49,7 @@
     }
 
     @if (acciones() && puedeBorrar()) {
-      <button type="button" class="borrar" (click)="borrar.emit()">Borrar</button>
+      <button type="button" class="borrar" (click)="borrar.emit()">{{ textoBorrar() }}</button>
     }
   </footer>
 

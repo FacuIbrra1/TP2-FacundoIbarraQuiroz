@@ -10,13 +10,17 @@
       <nav class="menu" aria-label="Principal">
         <a routerLink="/publicaciones" routerLinkActive="activo">Publicaciones</a>
         <a routerLink="/mi-perfil" routerLinkActive="activo">Mi perfil</a>
+        <!-- Sprint 4: solo para administradores. Queda marcado en las dos pestañas (/dashboard/...). -->
+        @if (autenticacion.esAdministrador()) {
+          <a routerLink="/dashboard" routerLinkActive="activo">Dashboard</a>
+        }
       </nav>
     }
 
     <div class="cuenta">
       @if (autenticacion.usuario()) {
         <span class="usuario">
-          <img [src]="autenticacion.usuario()?.imagenUrl" alt="" width="32" height="32" />
+          <img [src]="autenticacion.usuario()?.imagenUrl" alt="" width="32" height="32" appImagenRespaldo />
           &#64;{{ autenticacion.usuario()?.username }}
         </span>
         <button class="boton boton-secundario boton-chico" type="button" (click)="salir()">

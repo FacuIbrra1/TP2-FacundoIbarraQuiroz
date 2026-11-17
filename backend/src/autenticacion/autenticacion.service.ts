@@ -1,10 +1,9 @@
-import {BadRequestException, ConflictException, Injectable, UnauthorizedException} from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
 import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto.js';
 import { UsuarioDocument } from '../usuarios/entities/usuario.entity.js';
-import { CloudinaryService } from '../cloudinary/cloudinary.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { Types } from 'mongoose';
 
@@ -12,63 +11,14 @@ import { Types } from 'mongoose';
 export class AutenticacionService {
   constructor(
     private readonly usuariosService: UsuariosService,
-    private readonly cloudinaryService: CloudinaryService,
     private readonly jwtService: JwtService,
   ) {}
 
  // ---- REGISTRO ----:
-  async registro(
-    createUsuarioDto: CreateUsuarioDto,
-    imagen: Express.Multer.File,
-  ) {
-    // 400: la imagen de perfil es obligatoria y tiene que ser una imagen.
-    if (!imagen) {
-      throw new BadRequestException('La imagen de perfil es obligatoria');
-    }
-    if (!imagen.mimetype.startsWith('image/')) {
-      throw new BadRequestException(
-        'El archivo de perfil tiene que ser una imagen',
-      );
-    }
-
-    // 409: se revisa antes de crear, así se puede avisar cuál de los dos datos está repetido.
-    const emailEnUso = await this.usuariosService.buscarPorEmail(
-      createUsuarioDto.email,
-    );
-    if (emailEnUso) {
-      throw new ConflictException('Ya existe una cuenta con ese correo');
-    }
-
-    const usernameEnUso = await this.usuariosService.buscarPorUsername(
-      createUsuarioDto.username,
-    );
-    if (usernameEnUso) {
-      throw new ConflictException('Ese nombre de usuario ya está en uso');
-    }
-
-    // El apellido depende del tipo de cuenta: un club no tiene (si llegó uno, no se guarda), jugador y DT lo necesitan.
-    if (createUsuarioDto.tipo === 'club') {
-      createUsuarioDto.apellido = '';
-    } 
-    else if (!createUsuarioDto.apellido) {
-      throw new BadRequestException('El apellido es obligatorio');
-    }
-
-    // Recién con todo validado se sube la imagen, para no dejar imágenes sueltas en Cloudinary.
-    const imagenUrl = await this.cloudinaryService.subirImagen(
-      imagen,
-      'potrero-libre/perfiles',
-    );
-
-    // 10 = cuántas "vueltas" da bcrypt al encriptar. Más vueltas, más difícil de adivinar.
-    const passwordEncriptada = await bcrypt.hash(createUsuarioDto.password, 10);
-
-    const nuevoUsuario = await this.usuariosService.crear(
-      createUsuarioDto,
-      passwordEncriptada,
-      imagenUrl,
-    );
-
+  // Sprint 4: las validaciones y el alta pasaron a UsuariosService.crear(), porque ahora también
+  // las usa el administrador para dar de alta usuarios. Quien se registra solo puede ser 'usuario'.
+  async registro(createUsuarioDto: CreateUsuarioDto, imagen: Express.Multer.File) {
+    const nuevoUsuario = await this.usuariosService.crear(createUsuarioDto, imagen, 'usuario');
     return await this.respuestaConToken(nuevoUsuario);
   }
 
@@ -86,6 +36,13 @@ export class AutenticacionService {
     // Mismo mensaje en los dos casos: no se le dice a nadie qué cuentas existen.
     if ( !usuario || !(await bcrypt.compare(loginDto.password, usuario.password))) {
       throw new UnauthorizedException('Usuario o contraseña incorrectos');
+    }
+
+    // Sprint 4: una cuenta deshabilitada por un administrador no puede entrar, y se le avisa por qué.
+    // Se controla DESPUÉS de la contraseña: así nadie puede averiguar si una cuenta está deshabilitada
+    // sin saber su contraseña. 403 y no 401: los datos son correctos, pero no tiene permiso para entrar.
+    if (!usuario.activo) {
+      throw new ForbiddenException('Tu cuenta está deshabilitada. Comunicate con un administrador.');
     }
 
     return await this.respuestaConToken(usuario);
@@ -123,25 +80,39 @@ export class AutenticacionService {
   // El token ya lo validó el AuthGuard (401 si falta, es inválido o venció).
   // Se devuelven los datos actuales del usuario, sin la contraseña.
   async autorizar(id: Types.ObjectId) {
-    const usuario = await this.usuariosService.buscarPorId(id);
-    if (!usuario) {
-      throw new UnauthorizedException('El usuario del token ya no existe');
-    }
-    return usuario;
+    return await this.usuarioHabilitado(id);
   }
 
 
   // ---- REFRESCAR ----
-  // Un token nuevo con el mismo contenido (id, nombre de usuario y perfil) y otros 15 minutos.
+  // Un token nuevo (id, nombre de usuario y perfil) con otros 15 minutos.
   // No se firma el payload viejo tal cual: trae "iat" y "exp" (cuándo se creó y cuándo vence),
-  // y signAsync no acepta un payload que ya tiene "exp". Por eso se copian solo los tres datos.
+  // y signAsync no acepta un payload que ya tiene "exp". Por eso se arma uno nuevo.
+  // Sprint 4: los datos salen de la base y no del token viejo, así una cuenta deshabilitada
+  // no puede seguir extendiendo su sesión.
   async refrescar(payload: any) {
+    const usuario = await this.usuarioHabilitado(payload.sub);
     const nuevoPayload = {
-      sub: payload.sub,
-      username: payload.username,
-      perfil: payload.perfil,
+      sub: usuario._id,
+      username: usuario.username,
+      perfil: usuario.perfil,
     };
     const token = await this.jwtService.signAsync(nuevoPayload);
     return { token: token, vence: this.vencimiento(token) };
+  }
+
+
+  // Autorizar y refrescar empiezan igual: el usuario del token tiene que existir y estar habilitado.
+  // 401 en los dos casos: esa sesión ya no sirve y el front lleva al login (donde, si está
+  // deshabilitado, el login le explica por qué).
+  private async usuarioHabilitado(id: Types.ObjectId) {
+    const usuario = await this.usuariosService.buscarPorId(id);
+    if (!usuario) {
+      throw new UnauthorizedException('El usuario del token ya no existe');
+    }
+    if (!usuario.activo) {
+      throw new UnauthorizedException('Tu cuenta está deshabilitada');
+    }
+    return usuario;
   }
 }

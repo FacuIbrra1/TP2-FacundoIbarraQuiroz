@@ -1,0 +1,92 @@
+<section class="usuarios">
+  <header class="barra">
+    <div>
+      <h2>Usuarios</h2>
+      @if (!cargando() && !error()) {
+        <p class="ayuda">
+          {{ usuarios().length }} {{ usuarios().length === 1 ? 'cuenta' : 'cuentas' }} ·
+          {{ cantidadDeshabilitados() }} {{ cantidadDeshabilitados() === 1 ? 'deshabilitada' : 'deshabilitadas' }}
+        </p>
+      }
+    </div>
+    @if (!creando()) {
+      <button class="boton" type="button" (click)="empezarAlta()">+ Nuevo usuario</button>
+    }
+  </header>
+
+  @if (aviso()) {
+    <p class="aviso" role="status">{{ aviso() }}</p>
+  }
+
+  <!-- El alta usa el mismo formulario del registro, en modo administrador (suma el perfil). -->
+  @if (creando()) {
+    <app-registro [administrador]="true" (creado)="alCrear($event)" (cancelar)="creando.set(false)" />
+  }
+
+  @if (cargando()) {
+    <p class="ayuda">Cargando los usuarios…</p>
+  } @else if (error()) {
+    <div class="errores-servidor" role="alert">
+      <ul>
+        <li>{{ error() }}</li>
+      </ul>
+    </div>
+  } @else {
+    <ul class="lista">
+      @for (usuario of usuarios(); track usuario._id) {
+        <li class="tarjeta fila" [class.deshabilitado]="!usuario.activo">
+          <img class="foto" [src]="usuario.imagenUrl" alt="" width="48" height="48" appImagenRespaldo />
+
+          <div class="datos">
+            <p class="nombre">
+              {{ usuario.nombre }} {{ usuario.apellido }}
+              @if (esYo(usuario)) {
+                <span class="ayuda">(vos)</span>
+              }
+            </p>
+            <p class="ayuda">&#64;{{ usuario.username }} · {{ usuario.email }}</p>
+            <!-- Pipes propios: tipoCuenta y edad. -->
+            <p class="ayuda">{{ usuario.tipo | tipoCuenta }} · {{ usuario.fechaNacimiento | edad }}</p>
+          </div>
+
+          <div class="etiquetas">
+            @if (usuario.perfil === 'administrador') {
+              <span class="etiqueta admin">Administrador</span>
+            } @else {
+              <span class="etiqueta">Usuario</span>
+            }
+            @if (usuario.activo) {
+              <span class="etiqueta activa">● Habilitada</span>
+            } @else {
+              <span class="etiqueta inactiva">✕ Deshabilitada</span>
+            }
+          </div>
+
+          @if (!esYo(usuario)) {
+            <button
+              class="boton boton-secundario boton-chico"
+              type="button"
+              [class.peligro]="usuario.activo"
+              (click)="pedirCambio(usuario)"
+            >
+              {{ usuario.activo ? 'Deshabilitar' : 'Habilitar' }}
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  @if (usuarioACambiar()) {
+    <app-modal-confirmacion
+      [titulo]="tituloModal(usuarioACambiar()!)"
+      [mensaje]="mensajeModal(usuarioACambiar()!)"
+      [textoConfirmar]="usuarioACambiar()!.activo ? 'Sí, deshabilitar' : 'Sí, habilitar'"
+      [peligro]="usuarioACambiar()!.activo"
+      [procesando]="cambiando()"
+      [error]="errorAlCambiar()"
+      (confirmar)="confirmarCambio()"
+      (cancelar)="cancelarCambio()"
+    />
+  }
+</section>

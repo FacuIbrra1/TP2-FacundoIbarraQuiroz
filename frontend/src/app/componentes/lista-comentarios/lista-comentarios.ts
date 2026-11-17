@@ -1,5 +1,7 @@
 import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { HaceTiempoPipe } from '../../pipes/hace-tiempo';
+import { ImagenRespaldo } from '../../directivas/imagen-respaldo';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ComentariosService } from '../../servicios/comentarios-service';
 import { Autenticacion } from '../../servicios/autenticacion';
@@ -14,7 +16,7 @@ const POR_PAGINA = 5;
 // En Mi Perfil solo se leen. En la página de la publicación (interactiva = true) además
 // se puede comentar y editar los propios.
 @Component({
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, HaceTiempoPipe, ImagenRespaldo],
   selector: 'app-lista-comentarios',
   styleUrl: './lista-comentarios.css',
   templateUrl: './lista-comentarios.html',

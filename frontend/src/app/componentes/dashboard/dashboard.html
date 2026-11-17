@@ -1,0 +1,14 @@
+<section class="dashboard">
+  <header class="cabecera">
+    <p class="ayuda">Panel del administrador</p>
+    <h1>Dashboard</h1>
+  </header>
+
+  <nav class="pestanas" aria-label="Secciones del dashboard">
+    <a routerLink="usuarios" routerLinkActive="activa">Usuarios</a>
+    <a routerLink="estadisticas" routerLinkActive="activa">Estadísticas</a>
+  </nav>
+
+  <!-- Acá se muestra la ruta hija: dashboard/usuarios o dashboard/estadisticas. -->
+  <router-outlet />
+</section>

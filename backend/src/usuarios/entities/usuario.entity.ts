@@ -40,7 +40,9 @@ export class Usuario {
   perfil: string;
 
   // Potrero Libre: el tipo de cuenta. Una cuenta de club la maneja su delegado.
-  @Prop({ enum: ['jugador', 'dt', 'club'], required: true })
+  // Sprint 4: 'administrador' es un tipo más, solo para las cuentas que crea un administrador
+  // desde el dashboard con perfil administrador (el registro no lo acepta).
+  @Prop({ enum: ['jugador', 'dt', 'club', 'administrador'], required: true })
   tipo: string;
 
   // Baja lógica (Sprint 4): un usuario deshabilitado no puede iniciar sesión.

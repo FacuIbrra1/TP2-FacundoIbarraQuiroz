@@ -1,0 +1,68 @@
+<section class="estadisticas">
+  <!-- El lapso: dos fechas y un botón. Al aplicarlo, los tres gráficos se vuelven a dibujar. -->
+  <form class="tarjeta lapso" [formGroup]="form" (ngSubmit)="aplicar()" novalidate>
+    <div class="campo">
+      <label for="desde">Desde</label>
+      <input id="desde" type="date" formControlName="desde" [class.es-invalido]="esCampoInvalido('desde')" />
+    </div>
+    <div class="campo">
+      <label for="hasta">Hasta</label>
+      <input id="hasta" type="date" formControlName="hasta" [class.es-invalido]="esCampoInvalido('hasta')" />
+    </div>
+    <button class="boton" type="submit" [disabled]="cargando()">
+      {{ cargando() ? 'Cargando…' : 'Ver estadísticas' }}
+    </button>
+
+    @if (esCampoInvalido('desde') || esCampoInvalido('hasta')) {
+      <p class="error">Elegí las dos fechas.</p>
+    } @else if (form.hasError('rangoInvertido')) {
+      <p class="error">La fecha "desde" no puede ser posterior a "hasta".</p>
+    }
+  </form>
+
+  @if (error()) {
+    <div class="errores-servidor" role="alert">
+      <ul>
+        <li>{{ error() }}</li>
+      </ul>
+    </div>
+  }
+
+  <div class="graficos">
+    <!-- Los <canvas> están siempre en la página: Chart.js los busca por su id. Sin datos, se muestra un mensaje encima. -->
+    <article class="tarjeta grafico">
+      <h2>Publicaciones por usuario</h2>
+      <p class="ayuda">Cuántas publicó cada uno en el lapso.</p>
+      <div class="lienzo">
+        <canvas id="grafico-publicaciones" role="img" aria-label="Gráfico de barras: publicaciones por usuario"></canvas>
+        @if (sinPublicaciones()) {
+          <p class="ayuda vacio">No hubo publicaciones en este lapso.</p>
+        }
+      </div>
+    </article>
+
+    <article class="tarjeta grafico">
+      <h2>Comentarios por publicación</h2>
+      <p class="ayuda">Las 5 más comentadas en el lapso; el resto, en "Otras".</p>
+      <div class="lienzo">
+        <canvas id="grafico-por-publicacion" role="img" aria-label="Gráfico de torta: comentarios por publicación"></canvas>
+        @if (sinComentariosPorPublicacion()) {
+          <p class="ayuda vacio">No hubo comentarios en este lapso.</p>
+        }
+      </div>
+    </article>
+
+    <article class="tarjeta grafico ancho">
+      <h2>Comentarios en el lapso</h2>
+      <p class="ayuda">
+        Total: <strong class="total">{{ totalComentarios() }}</strong>. Cuántos se hicieron cada día.
+      </p>
+      <div class="lienzo">
+        <canvas id="grafico-comentarios" role="img" aria-label="Gráfico de líneas: comentarios por día"></canvas>
+        @if (sinComentarios()) {
+          <p class="ayuda vacio">No hubo comentarios en este lapso.</p>
+        }
+      </div>
+    </article>
+  </div>
+</section>

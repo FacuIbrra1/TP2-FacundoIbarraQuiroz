@@ -39,12 +39,15 @@
     <ul>
       @for (comentario of comentarios(); track comentario._id) {
         <li class="comentario">
-          <img class="foto" [src]="comentario.autor.imagenUrl" alt="" width="32" height="32" />
+          <img class="foto" [src]="comentario.autor.imagenUrl" alt="" width="32" height="32" appImagenRespaldo />
           <div class="cuerpo">
             <p class="encabezado">
               <strong>{{ comentario.autor.nombre }} {{ comentario.autor.apellido }}</strong>
               <span class="ayuda">
-                &#64;{{ comentario.autor.username }} · {{ comentario.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                &#64;{{ comentario.autor.username }} ·
+                <time [attr.datetime]="comentario.fecha" [title]="comentario.fecha | date: 'dd/MM/yyyy HH:mm'">{{
+                  comentario.fecha | haceTiempo
+                }}</time>
                 @if (comentario.modificado) {
                   · (editado)
                 }

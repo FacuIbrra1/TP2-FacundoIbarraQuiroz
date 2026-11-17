@@ -1,0 +1,36 @@
+.cabecera p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+/* Las dos pestañas: la elegida, subrayada en verde (como el menú del encabezado). */
+.pestanas {
+  display: flex;
+  gap: 24px;
+  margin: 16px 0 24px;
+  border-bottom: 1px solid var(--superficie-alta);
+}
+
+.pestanas a {
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+}
+
+.pestanas a:hover {
+  color: var(--texto);
+}
+
+.pestanas a.activa {
+  color: var(--texto);
+  border-bottom-color: var(--verde);
+}

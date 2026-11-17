@@ -1,7 +1,12 @@
-<section class="registro">
+<section class="registro" [class.en-dashboard]="administrador()">
   <div class="tarjeta">
-    <h1>Crear cuenta</h1>
-    <p class="ayuda subtitulo">Sumate a Potrero Libre como jugador, director técnico o club.</p>
+    @if (administrador()) {
+      <h2>Nuevo usuario</h2>
+      <p class="ayuda subtitulo">Los mismos datos que el registro, y además su perfil.</p>
+    } @else {
+      <h1>Crear cuenta</h1>
+      <p class="ayuda subtitulo">Sumate a Potrero Libre como jugador, director técnico o club.</p>
+    }
 
     @if (erroresServidor().length > 0) {
       <div class="errores-servidor" role="alert">
@@ -14,11 +19,30 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="registrarse()" novalidate>
+      <!-- Sprint 4: solo en el dashboard. Los dos radio buttons del enunciado para elegir el perfil. -->
+      @if (administrador()) {
+        <fieldset class="campo tipos">
+          <legend class="etiqueta">Perfil</legend>
+          <div class="opciones perfiles">
+            <label class="opcion">
+              <input type="radio" formControlName="perfil" value="usuario" />
+              <span class="opcion-titulo">Usuario</span>
+              <span class="ayuda">Usa la red social</span>
+            </label>
+            <label class="opcion">
+              <input type="radio" formControlName="perfil" value="administrador" />
+              <span class="opcion-titulo">Administrador</span>
+              <span class="ayuda">Además, entra al dashboard</span>
+            </label>
+          </div>
+        </fieldset>
+      }
+
       <!-- Tipo de cuenta -->
       <fieldset class="campo tipos">
         <legend class="etiqueta">Tipo de cuenta</legend>
         <div class="opciones">
-          @for (tipo of tipos; track tipo.valor) {
+          @for (tipo of tiposVisibles(); track tipo.valor) {
             <label class="opcion">
               <input type="radio" formControlName="tipo" [value]="tipo.valor" />
               <span class="opcion-titulo">{{ tipo.titulo }}</span>
@@ -28,6 +52,8 @@
         </div>
         @if (esCampoInvalido('tipo')) {
           <p class="error">Elegí el tipo de cuenta.</p>
+        } @else if (form.hasError('tipoSoloAdministrador')) {
+          <p class="error">El tipo Administrador es solo para el perfil Administrador: elegí otro tipo.</p>
         }
       </fieldset>
 
@@ -106,13 +132,17 @@
 
         <div class="campo">
           <label for="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            autocomplete="new-password"
-            [class.es-invalido]="esCampoInvalido('password')"
-          />
+          <div class="campo-clave">
+            <input
+              #campoPassword
+              id="password"
+              type="password"
+              formControlName="password"
+              autocomplete="new-password"
+              [class.es-invalido]="esCampoInvalido('password')"
+            />
+            <button [appMostrarClave]="campoPassword"></button>
+          </div>
           @if (esCampoInvalido('password')) {
             @if (form.get('password')?.hasError('required')) {
               <p class="error">La contraseña es obligatoria.</p>
@@ -133,13 +163,17 @@
 
         <div class="campo">
           <label for="repetirPassword">Repetir contraseña</label>
-          <input
-            id="repetirPassword"
-            type="password"
-            formControlName="repetirPassword"
-            autocomplete="new-password"
-            [class.es-invalido]="repetirPasswordInvalido()"
-          />
+          <div class="campo-clave">
+            <input
+              #campoRepetir
+              id="repetirPassword"
+              type="password"
+              formControlName="repetirPassword"
+              autocomplete="new-password"
+              [class.es-invalido]="repetirPasswordInvalido()"
+            />
+            <button [appMostrarClave]="campoRepetir"></button>
+          </div>
           @if (repetirPasswordInvalido()) {
             @if (form.get('repetirPassword')?.hasError('required')) {
               <p class="error">Repetí la contraseña.</p>
@@ -195,11 +229,24 @@
         }
       </div>
 
-      <button class="boton boton-ancho" type="submit" [disabled]="enviando()">
-        {{ enviando() ? 'Creando la cuenta…' : 'Crear cuenta' }}
-      </button>
+      @if (administrador()) {
+        <div class="botones">
+          <button class="boton boton-secundario" type="button" [disabled]="enviando()" (click)="cancelar.emit()">
+            Cancelar
+          </button>
+          <button class="boton" type="submit" [disabled]="enviando()">
+            {{ enviando() ? 'Creando el usuario…' : 'Crear usuario' }}
+          </button>
+        </div>
+      } @else {
+        <button class="boton boton-ancho" type="submit" [disabled]="enviando()">
+          {{ enviando() ? 'Creando la cuenta…' : 'Crear cuenta' }}
+        </button>
+      }
     </form>
 
-    <p class="pie">¿Ya tenés cuenta? <a routerLink="/login">Ingresá</a></p>
+    @if (!administrador()) {
+      <p class="pie">¿Ya tenés cuenta? <a routerLink="/login">Ingresá</a></p>
+    }
   </div>
 </section>

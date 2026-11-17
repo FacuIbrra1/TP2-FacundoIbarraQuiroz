@@ -42,13 +42,18 @@
 
       <div class="campo">
         <label for="password">Contraseña</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          autocomplete="current-password"
-          [class.es-invalido]="esCampoInvalido('password')"
-        />
+        <!-- Sprint 4: directiva propia appMostrarClave (el botón "Mostrar"). -->
+        <div class="campo-clave">
+          <input
+            #campoPassword
+            id="password"
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            [class.es-invalido]="esCampoInvalido('password')"
+          />
+          <button [appMostrarClave]="campoPassword"></button>
+        </div>
         @if (esCampoInvalido('password')) {
           @if (form.get('password')?.hasError('required')) {
             <p class="error">La contraseña es obligatoria.</p>
