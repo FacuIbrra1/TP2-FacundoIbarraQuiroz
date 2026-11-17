@@ -17,7 +17,7 @@ import { PublicacionesModule } from './publicaciones/publicaciones.module.js';
     MongooseModule.forRoot(process.env.MONGO_URI!, { lazyConnection: true }),
     // global: true (como en el ejemplo de cookies) deja el JwtService disponible en todos los módulos.
     // Va acá y no en AutenticacionModule: ese archivo se carga antes que el .env, y JWT_SECRET llegaría vacío.
-    JwtModule.register({global: true, secret: process.env.JWT_SECRET, signOptions: { expiresIn: '3m' }}),
+    JwtModule.register({global: true, secret: process.env.JWT_SECRET, signOptions: { expiresIn: '5m' }}),
     UsuariosModule,
     AutenticacionModule,
     PublicacionesModule,
