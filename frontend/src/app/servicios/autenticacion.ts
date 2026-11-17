@@ -11,7 +11,7 @@ const CLAVE_SESION = 'sesionPotreroLibre';
 // Cuánto antes de que venza el token aparece el aviso (corrección del Sprint 3).
 // El token dura 15 minutos: el aviso sale cuando quedan 5.
 // Para la presentación (token de '1m' en el back): 30 * 1000, el aviso sale cuando quedan 30 segundos.
-const MARGEN_AVISO_MS = 5 * 60 * 1000;
+const MARGEN_AVISO_MS = 30 * 1000;
 
 @Service()
 export class Autenticacion {
