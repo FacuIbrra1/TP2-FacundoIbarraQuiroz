@@ -144,10 +144,17 @@ export class Autenticacion {
     const restante = this.vence - Date.now();
 
     if (restante <= 0) {
-      // El token venció: se cierra la sesión y se va al login con el aviso.
-      this.cerrarSesion();
-      this.sesionVencida.set(true);
-      //this.router.navigate(['/login']); // comentar estas linea.
+      // Corrección del Sprint 4: el token venció, pero la sesión no se cierra acá. Se le pregunta al back con autorizar 
+      // el token vencido: responde 401 y el sesionInterceptor  cierra la sesión y lleva al login, como con cualquier otro 401.
+      
+      clearInterval(this.reloj); // Alcanza con un pedido: el reloj ya no hace falta.
+      this.mostrarAviso.set(false);
+      this.autorizar().subscribe({
+        // El back todavía lo dio por bueno (su reloj va un poco atrasado): se prueba de nuevo en un segundo.
+        next: () => setTimeout(() => this.revisarSesion(), 1000),
+        // El 401 en la consola: "Error 401: El token no es valido o vencio".
+        error: (error) => console.error(`Error ${error.status}: ${error.error.message}`),
+      });
       return;
     }
 
