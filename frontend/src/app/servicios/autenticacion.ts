@@ -147,7 +147,7 @@ export class Autenticacion {
       // El token venció: se cierra la sesión y se va al login con el aviso.
       this.cerrarSesion();
       this.sesionVencida.set(true);
-      this.router.navigate(['/login']);
+      //this.router.navigate(['/login']); // comentar estas linea.
       return;
     }
 
